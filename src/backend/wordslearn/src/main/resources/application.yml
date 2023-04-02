@@ -1,0 +1,23 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/my_test
+    username: root
+    password: root
+
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml
+
+logging:
+  level:
+    com.example.springmybatisdemo.mapper: debug
+
+
+jwt:
+  header: "Authorization" #token返回头部
+  tokenPrefix: "Bearer " #token前缀
+  secret: "asdfghjklqwertyuiopzxcvbnyhh4tyujyujfrt67ujbvfrt6yuhbvr4" #密钥
+  expireTime: 1440 #token有效时间 (分钟) 建议一小时以上
