@@ -14,10 +14,10 @@
       <div><el-icon><Headset /></el-icon></div>
       <span>听单词</span>
     </div>
-    <div class="item">
+    <router-link :to="{ name: 'dictation_select' }" class="item">
       <div><el-icon><EditPen /></el-icon></div>
       <span>默单词</span>
-    </div>
+    </router-link>
     <div class="item">
       <div><el-icon><Collection /></el-icon></div>
       <span>错词本</span>
@@ -114,6 +114,9 @@ export default {
   .main > .item {
     width: var(--item-size);
     height: var(--item-size);
+    color: black;
+    cursor: context-menu;
+    text-decoration: auto;
   }
   .main > .item > div {
     --icon-size: calc(var(--item-size) * 3 / 5);

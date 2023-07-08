@@ -23,5 +23,11 @@ const routes = [
       title: '单词表',
       component: () => import('@/views/vocabulary.vue'),
   },
+  {
+    path: '/dictation/select',
+    name: 'dictation_select',
+    title: '单词表',
+    component: () => import('@/views/dictation_select.vue'),
+  },
 ]
 export default routes
