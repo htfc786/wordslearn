@@ -4,6 +4,7 @@ const routes = [
       name: 'index',
       title: '首页',
       component: () => import('@/views/index.vue'),
+      meta: { requireAuth:true, },
   },
   {
       path: '/login',
@@ -22,12 +23,14 @@ const routes = [
       name: 'vocabulary',
       title: '单词表',
       component: () => import('@/views/vocabulary.vue'),
+      meta: { requireAuth:true, },
   },
   {
     path: '/dictation/select',
     name: 'dictation_select',
-    title: '单词表',
+    title: '单词默写选择',
     component: () => import('@/views/dictation_select.vue'),
+    meta: { requireAuth:true, },
   },
 ]
 export default routes

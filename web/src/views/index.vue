@@ -39,6 +39,14 @@
 <script>
 export default {
   name: 'index',
+  mounted: function () {
+    this.init_user_info()
+  },
+  methods: {
+    init_user_info(){
+
+    },
+  },
 }
 </script>
 

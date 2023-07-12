@@ -34,13 +34,19 @@ export default {
       let that = this
       API.user.login(this.username, this.password)
         .then(res => {
+          localStorage.setItem("access_token", res.access_token)
+          localStorage.setItem("username", res.username)
+          localStorage.setItem("userid", res.userid)
           that.info = "登陆成功，即将跳转。。。";
           setTimeout(() => {
-            this.$router.push({ name:"index" });
+            let redirect = decodeURIComponent(this.$route.query.redirect || '/'); 
+            this.$router.push({
+              path: redirect
+            })
           }, 3000)
         })
         .catch(res => {
-          that.info = res.data.msg;
+          that.info = res.msg;
         });
     }
   },

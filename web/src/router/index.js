@@ -13,10 +13,22 @@ const router = createRouter({
 })
 
 // 全局前置守卫，这里可以加入用户登录判断
+// https://blog.csdn.net/zhuzhucaicai/article/details/111932980
 router.beforeEach((to, from, next) => {
     // 继续前进 next()
     // 返回 false 以取消导航
-    next()
+    if (to.meta.requireAuth) {  // 判断该路由是否需要登录权限
+        if (localStorage.getItem("access_token") != null) {  // 获取用户登录信息
+            next();
+        } else {
+            next({
+                path: '/login',
+                query: {redirect: from.fullPath}  // 将跳转的路由path作为参数，登录成功后跳转到该路由
+            })
+        }
+    } else {
+        next();
+    }
 })
 
 // 全局后置钩子，这里可以加入改变页面标题等操作

@@ -37,13 +37,13 @@ export default {
       let that = this
       API.user.register(this.username, this.password, this.confirm)
         .then(res => {
-          that.info = "注册成功，即将登录 ";
+          that.info = "注册成功，即将登录";
           setTimeout(() => {
             this.$router.push({ name:"login" });
           }, 3000)
         })
         .catch(res => {
-          that.info = res.data.msg;
+          that.info = res.msg;
         });
     }
   },

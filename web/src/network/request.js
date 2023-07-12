@@ -25,8 +25,8 @@ service.interceptors.request.use(
 	function(config) {
 		//...
 		//配置token的添加
-		if (localStorage.getItem("token") != null) {
-			config.headers.token = localStorage.getItem("token")
+		if (localStorage.getItem("access_token") != null) {
+			config.headers.Authorization = localStorage.getItem("access_token")
 		}
 		
 		//...
@@ -42,20 +42,14 @@ export function request(query) {
 	return service
 		.request(query)
 		.then((res) => {
-			if (res.data?.data?.type === "login") {
-				//登录信息存储
-				localStorage.setItem('token', res.data.data.token);
-				localStorage.setItem('userid', res.data.data.userid);
-				localStorage.setItem('username', res.data.data.username);
-
-				return Promise.resolve(res.data)
-			} else if (res.data.status === 401) {
+			if (res.data.code === 401) {
+				localStorage.removeItem("access_token")
 				vue.prototype.$$router.push({ path: '/login' })
-				return Promise.reject(res)
-			} else if (res.data.status === 500) {
-				return Promise.reject(res)
-			} else if (res.data.status === 400) {
-				return Promise.reject(res)
+				return Promise.reject(res.data)
+			} else if (res.data.code === 500) {
+				return Promise.reject(res.data)
+			} else if (res.data.code === 400) {
+				return Promise.reject(res.data)
 			} else {
 				return Promise.resolve(res.data)
 			}

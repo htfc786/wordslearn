@@ -3,6 +3,7 @@
 
 from flask import Blueprint
 from ..db import *
+from ..tools import *
 
 app = Blueprint("controller", __name__)
 
