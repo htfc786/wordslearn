@@ -1,4 +1,4 @@
-import { post,form } from '@/network/request'
+import { post,get,form } from '@/network/request'
 
 export default {
   
@@ -17,6 +17,10 @@ export default {
         password: password,
         confirm: confirm,
       })
+    },
+    // 获取用户信息
+    info: function(){
+      return get("/user/info", {})
     },
   },
 }

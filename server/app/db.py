@@ -13,6 +13,6 @@ class Users(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     username = db.Column(db.String(16))
-    password = db.Column(db.String(32))
+    password = db.Column(db.String(64))
     salt = db.Column(db.String(6))
     isadmin = db.Column(db.Boolean, default=False)

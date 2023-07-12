@@ -1,7 +1,7 @@
 # 参考： https://github.com/htfc786/wordslearn/commit/56e80060b227171258f22a1c6aa793a2cdfdb9e2?diff=unified#diff-a4bd5d49f1ef748cd6d715a8241651fa2202999e3ae2ee760cabb21f47930365
 # jwt：https://juejin.cn/post/7234450312726691898
 from flask import request, jsonify
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required,verify_jwt_in_request
 
 from . import app
 from . import db, Users
@@ -28,7 +28,7 @@ def user_login():
         return jsonify({ "code": 400, "msg": "用户名或密码错误" })
     
     # 4 生成jwt密钥
-    access_token = "Bearer " + create_access_token(identity = username)
+    access_token = "Bearer " + create_access_token(identity = user.id)
 
     return jsonify({
         "code": 200, 
@@ -71,3 +71,23 @@ def user_register():
     db.session.commit()
 
     return jsonify({ "code": 200, "msg": "注册成功！" })
+
+@app.route('/user/info', methods=['GET'])
+@jwt_required()
+def user_info():
+    # 1 验证是否登录
+    current_user_id = get_jwt_identity()
+    if not current_user_id:
+        return jsonify({ 'code': 401, 'msg': '请登录！' })
+    
+    # 2 数据库获取用户信息
+    user = Users.query.filter_by(id=current_user_id).first()
+    
+    return jsonify({
+        "code": 200, 
+        "msg": "查询成功", 
+        "data": {
+            "userid": user.id, 
+            "username": user.username, 
+        }
+    })

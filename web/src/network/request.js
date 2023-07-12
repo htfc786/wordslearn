@@ -1,5 +1,6 @@
 // https://blog.csdn.net/saienenen/article/details/115030205
 import axios from 'axios'
+import { ElMessage } from 'element-plus'
 
 import CONF from '@/config'
 
@@ -43,8 +44,9 @@ export function request(query) {
 		.request(query)
 		.then((res) => {
 			if (res.data.code === 401) {
+				ElMessage.error('需要登录！')
 				localStorage.removeItem("access_token")
-				vue.prototype.$$router.push({ path: '/login' })
+				window.location.href="./login"
 				return Promise.reject(res.data)
 			} else if (res.data.code === 500) {
 				return Promise.reject(res.data)
@@ -56,7 +58,20 @@ export function request(query) {
 		})
 		//对错误进行处理
 		.catch((e) => {
-			return Promise.reject(e)
+			if (e.response.status === 401) {
+				ElMessage.error('需要登录！')
+				localStorage.removeItem("access_token")
+				window.location.href="./login"
+				return Promise.reject(e)
+			} else if (e.response.status === 422) {
+				ElMessage.error('需要登录！')
+				localStorage.removeItem("access_token")
+				window.location.href="./login"
+				return Promise.reject(e)
+			} else {
+				ElMessage.error('请求接口发生错误：' + e.response.status)
+				return Promise.reject(e)
+			}
 		})
 }
 

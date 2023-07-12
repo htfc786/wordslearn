@@ -18,14 +18,6 @@ app.config["JWT_SECRET_KEY"] = SECRET  # 设置 jwt 的秘钥
 
 jwt = JWTManager(app)
 
-@jwt.expired_token_loader
-@jwt.invalid_token_loader
-@jwt.unauthorized_loader
-@jwt.needs_fresh_token_loader
-@jwt.revoked_token_loader
-def expired_token_callback():
-    return jsonify({ 'code': 401 , 'msg': '请登录！' })
-
 # 数据库
 db.init_app(app)
 

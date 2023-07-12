@@ -4,8 +4,8 @@
       <el-icon><User /></el-icon>
     </div>
     <div class="relation">
-      <span class="name">htfc786</span>
-      <div class="uid"><span>uid:626519554</span></div>
+      <span class="name">{{ view.username }}</span>
+      <div class="uid"><span>uid: {{ view.uid }}</span></div>
       <span class="content"></span> <!--个性签名 留空-->
     </div>
   </div>
@@ -37,14 +37,30 @@
 </template>
 
 <script>
+import API from '@/network/API';
 export default {
   name: 'index',
+  data() {
+    return {
+      view: {
+        username: "(请先登录)",
+        uid: 0,
+      },
+    }
+  },
   mounted: function () {
     this.init_user_info()
   },
   methods: {
     init_user_info(){
-
+      var that = this
+      API.user.info()
+        .then(res=>{
+          localStorage.setItem("userid", res.data.userid)
+          localStorage.setItem("username", res.data.username)
+          that.view.uid = res.data.userid;
+          that.view.username = res.data.username;
+        })
     },
   },
 }

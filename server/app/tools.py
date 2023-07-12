@@ -16,6 +16,6 @@ def salt_password(password, salt):
     password:原密码 salt:加盐
     https://blog.csdn.net/weixin_42582241/article/details/128949353
     """
-    md_sale=hashlib.md5((str(password).join(salt)).encode()) # MD5加盐加密方法一：将盐拼接在原密码后
-    md5salepwd=md_sale.hexdigest()
-    return md5salepwd
+    sha_sale = hashlib.sha256((str(password).join(salt)).encode())
+    shasalepwd = sha_sale.hexdigest()
+    return shasalepwd
