@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-header>
+    <el-header class="header">
       <el-link :underline="false"><el-icon :size="25"><Back /></el-icon></el-link>
       <span>单词表</span>
     </el-header>
@@ -17,7 +17,7 @@
         
         <el-button type="primary" @click="dialogFormVisible = true">Primary</el-button>
       </div>
-      <el-table :data="tableData" border style="width: 100%">
+      <el-table :data="tableData" border>
         <el-table-column prop="date" label="Date" width="180" />
         <el-table-column prop="name" label="Name" width="180" />
         <el-table-column prop="address" label="Address" />
@@ -89,6 +89,12 @@ export default {
   }
   .el-header {
     background-color: #fff;
+    position: fixed;
+    height: 58px;
+    width: 100%;
+    top: 0;
+    border-bottom: #E4E7ED 2px solid;
+    z-index: 10;
   }
   .el-header > span{
     display: inline-block;
@@ -102,11 +108,18 @@ export default {
     background-color: #fff;
     margin-bottom: 5px;
   }
+  .el-main {
+    margin-top: 60px;
+  }
   .tools-bar > .el-select {
     margin: 4px;
   }
   .tools-bar > .el-button {
     margin: 4px;
     float: right;
+  }
+  .el-table {
+    width: 100%;
+    height: calc(100vh - 60px - 20px*2 - 40px - 5px);
   }
 </style>

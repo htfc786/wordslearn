@@ -35,6 +35,8 @@ export default {
       API.user.login(this.username, this.password)
         .then(res => {
           localStorage.setItem("access_token", res.access_token)
+          localStorage.setItem("userid", res.userid)
+          localStorage.setItem("username", res.username)
           that.info = "登陆成功，即将跳转。。。";
           setTimeout(() => {
             let redirect = decodeURIComponent(this.$route.query.redirect || '/'); 

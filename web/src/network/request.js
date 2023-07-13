@@ -58,7 +58,10 @@ export function request(query) {
 		})
 		//对错误进行处理
 		.catch((e) => {
-			if (e.response.status === 401) {
+			if (e.code === "ERR_NETWORK") {
+				ElMessage.error('网络错误！接口请求超时')
+				return Promise.reject(e)
+			} else if (e.response.status === 401) {
 				ElMessage.error('需要登录！')
 				localStorage.removeItem("access_token")
 				window.location.href="./login"

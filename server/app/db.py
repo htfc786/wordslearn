@@ -38,7 +38,7 @@ class Groups(db.Model):
     description = db.Column(db.String(255), nullable=True)
     bookid = db.Column(db.Integer, nullable=False)
 
-class Groups(db.Model):
+class Books(db.Model):
     __tablename__ = 'books'
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String(32), nullable=False)
@@ -47,7 +47,7 @@ class Groups(db.Model):
 
 
 class Sounds(db.Model):
-    __tablename__ = 'books'
+    __tablename__ = 'sounds'
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     url = db.Column(db.String(2048), nullable=False)
 

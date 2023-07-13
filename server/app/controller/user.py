@@ -34,6 +34,7 @@ def user_login():
         "code": 200, 
         "msg": "登陆成功", 
         "userid": user.id, 
+        "username": user.username,
         "access_token": access_token
     })
 

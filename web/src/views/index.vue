@@ -43,7 +43,7 @@ export default {
   data() {
     return {
       view: {
-        username: "(请先登录)",
+        username: "",
         uid: 0,
       },
     }
@@ -53,14 +53,8 @@ export default {
   },
   methods: {
     init_user_info(){
-      var that = this
-      API.user.info()
-        .then(res=>{
-          localStorage.setItem("userid", res.data.userid)
-          localStorage.setItem("username", res.data.username)
-          that.view.uid = res.data.userid;
-          that.view.username = res.data.username;
-        })
+      this.view.uid = localStorage.getItem("userid");
+      this.view.username = localStorage.getItem("username");
     },
   },
 }
