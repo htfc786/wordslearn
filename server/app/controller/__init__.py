@@ -7,7 +7,7 @@ from ..tools import *
 
 app = Blueprint("controller", __name__)
 
-from . import user
+from . import user, wordsadmin
 
 
 

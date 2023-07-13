@@ -23,4 +23,31 @@ export default {
       return get("/user/info", {})
     },
   },
+  wordsadmin: {
+    books: {
+      get: function(){
+        return get("/wordsadmin/book", {})
+      },
+      add: function(name, description, cover){
+        return post("/wordsadmin/book/add", {
+          name: name,
+          description: description,
+          cover: cover,
+        })
+      },
+      del: function(bookid){
+        return post("/wordsadmin/book/del", {
+          bookid: bookid,
+        })
+      },
+      edit: function(bookid, name, description, cover){
+        return post("/wordsadmin/book/edit", {
+          bookid: bookid,
+          name: name,
+          description: description,
+          cover: cover,
+        })
+      },
+    },
+  },
 }

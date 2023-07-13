@@ -23,8 +23,8 @@ const routes = [
   {
       path: '/wordsadmin',
       name: 'vocabulary',
-      title: '单词表',
-      component: () => import('@/views/wordsadmin/index.vue'),
+      title: '单词表-书籍管理',
+      component: () => import('@/views/wordsadmin/book.vue'),
       meta: { requireAuth:true, },
   },
   {
