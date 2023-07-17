@@ -38,15 +38,23 @@ service.interceptors.request.use(
 	}
 )
 
+//未登录
+function nologin(){
+	
+	ElMessage.error('需要登录！')
+	localStorage.removeItem("access_token")
+	localStorage.removeItem("userid")
+	localStorage.removeItem("username")
+	window.location.href="/login"
+}
+
 // 封装请求方法
 export function request(query) {
 	return service
 		.request(query)
 		.then((res) => {
 			if (res.data.code === 401) {
-				ElMessage.error('需要登录！')
-				localStorage.removeItem("access_token")
-				window.location.href="./login"
+				nologin();
 				return Promise.reject(res.data)
 			} else if (res.data.code === 500) {
 				return Promise.reject(res.data)
@@ -62,14 +70,10 @@ export function request(query) {
 				ElMessage.error('网络错误！接口请求超时')
 				return Promise.reject(e)
 			} else if (e.response.status === 401) {
-				ElMessage.error('需要登录！')
-				localStorage.removeItem("access_token")
-				window.location.href="./login"
+				nologin();
 				return Promise.reject(e)
 			} else if (e.response.status === 422) {
-				ElMessage.error('需要登录！')
-				localStorage.removeItem("access_token")
-				window.location.href="./login"
+				nologin();
 				return Promise.reject(e)
 			} else {
 				ElMessage.error('请求接口发生错误：' + e.response.status)

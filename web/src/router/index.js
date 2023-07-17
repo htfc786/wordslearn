@@ -12,6 +12,8 @@ const router = createRouter({
     routes: routes,
 })
 
+// 重定向：https://juejin.cn/post/7108925024492322829
+
 // 全局前置守卫，这里可以加入用户登录判断
 // https://blog.csdn.net/zhuzhucaicai/article/details/111932980
 router.beforeEach((to, from, next) => {
@@ -23,7 +25,7 @@ router.beforeEach((to, from, next) => {
         } else {
             next({
                 path: '/login',
-                query: {redirect: from.fullPath}  // 将跳转的路由path作为参数，登录成功后跳转到该路由
+                query: { redirect: to.fullPath }  // 将跳转的路由path作为参数，登录成功后跳转到该路由
             })
         }
     } else {

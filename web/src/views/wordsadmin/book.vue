@@ -1,8 +1,9 @@
 <template>
   <el-container>
     <el-header class="header">
-      <el-link :underline="false"><el-icon :size="25"><Back /></el-icon></el-link>
-      <span>书籍管理</span>
+      <router-link :to="{ name: 'index' }">
+        <el-link :underline="false"><el-icon :size="25"><Back /></el-icon></el-link>
+      </router-link>
       <span>书籍管理</span>
     </el-header>
     <el-main>
@@ -17,6 +18,7 @@
           <template #default="scope">
             <el-button @click="editBook_open(scope.row.bookid,scope.row.name,scope.row.description,scope.row.cover)" size="small">编辑</el-button>
             <el-button @click="delBook(scope.row.bookid)" type="danger" size="small">删除</el-button>
+            <el-button @click="inBook(scope.row.bookid)" type="success" size="small">进入</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -137,6 +139,14 @@ export default {
         .catch(e=>{
           that.$message.error(e.msg);
         })
+    },
+    inBook(bookid){
+      this.$router.push({
+        name: "wordsadmin_group",
+        params: {
+          bookid: bookid,
+        },
+      })
     },
   },
 }

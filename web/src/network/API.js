@@ -49,5 +49,31 @@ export default {
         })
       },
     },
+    groups: {
+      get: function(bookid){
+        return get("/wordsadmin/group", {
+          bookid: bookid,
+        })
+      },
+      add: function(bookid, name, description){
+        return post("/wordsadmin/group/add", {
+          bookid: bookid,
+          name: name,
+          description: description,
+        })
+      },
+      del: function(groupid){
+        return post("/wordsadmin/group/del", {
+          groupid: groupid,
+        })
+      },
+      edit: function(groupid, name, description){
+        return post("/wordsadmin/group/edit", {
+          groupid: groupid,
+          name: name,
+          description: description,
+        })
+      },
+    },
   },
 }

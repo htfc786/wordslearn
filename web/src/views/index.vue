@@ -24,10 +24,10 @@
     </div>
   </div>
   <div class="list">
-    <div class="item">
+    <router-link :to="{ name: 'wordsadmin' }" class="item">
       <span>单词表管理</span>
       <el-icon><ArrowRightBold /></el-icon>
-    </div>
+    </router-link>
     <div class="item">
       <span>默写历史</span>
       <el-icon><ArrowRightBold /></el-icon>
@@ -170,6 +170,10 @@ export default {
     border-top: #DCDFE6 solid 1px;
     border-bottom: #DCDFE5 solid 1px;
     position: relative;
+    display: block;
+    color: black;
+    cursor: context-menu;
+    text-decoration: auto;
   }
   .list > .item > span {
     height: var(--item-height);
