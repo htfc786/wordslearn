@@ -30,7 +30,6 @@ CREATE TABLE `words` (
 CREATE TABLE `groups` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
   `name` char(32) NOT NULL COMMENT '组名称',
-  `description` char(255) COMMENT '组描述',
   `bookid` int NOT NULL COMMENT '所属书id',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4;

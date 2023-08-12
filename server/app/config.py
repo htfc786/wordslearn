@@ -6,3 +6,4 @@ DBPORT = 3306 # 数据库端口
 DBUSERNAME = "root" # 数据库用户名
 DBPASSWORD = "root" # 数据库密码 请改成你自己的
 DBDATABASE = "wordslearn" # 数据库名称
+JWT_ACCESS_TOKEN_EXPIRES = 60 * 60 * 24 * 7 #jwt过期时间 这里设置7天

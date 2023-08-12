@@ -28,6 +28,11 @@ export default {
       get: function(){
         return get("/wordsadmin/book", {})
       },
+      info: function(bookid){
+        return get("/wordsadmin/book/info", {
+          bookid: bookid
+        })
+      },
       add: function(name, description, cover){
         return post("/wordsadmin/book/add", {
           name: name,
@@ -55,11 +60,15 @@ export default {
           bookid: bookid,
         })
       },
-      add: function(bookid, name, description){
+      info: function(groupid){
+        return get("/wordsadmin/group/info", {
+          groupid: groupid
+        })
+      },
+      add: function(bookid, name){
         return post("/wordsadmin/group/add", {
           bookid: bookid,
           name: name,
-          description: description,
         })
       },
       del: function(groupid){
@@ -67,11 +76,34 @@ export default {
           groupid: groupid,
         })
       },
-      edit: function(groupid, name, description){
+      edit: function(groupid, name){
         return post("/wordsadmin/group/edit", {
           groupid: groupid,
           name: name,
-          description: description,
+        })
+      },
+    },
+    words: {
+      get: function(groupid){
+        return get("/wordsadmin/word", {
+          groupid: groupid,
+        })
+      },
+      add: function(bookid, name){
+        return post("/wordsadmin/word/add", {
+          bookid: bookid,
+          name: name,
+        })
+      },
+      del: function(wodrid){
+        return post("/wordsadmin/word/del", {
+          wodrid: wodrid,
+        })
+      },
+      edit: function(groupid, name){
+        return post("/wordsadmin/word/edit", {
+          groupid: groupid,
+          name: name,
         })
       },
     },

@@ -35,7 +35,6 @@ class Groups(db.Model):
     __tablename__ = 'groups'
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String(32), nullable=False)
-    description = db.Column(db.String(255), nullable=True)
     bookid = db.Column(db.Integer, nullable=False)
 
 class Books(db.Model):

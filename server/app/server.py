@@ -4,6 +4,7 @@ from .controller import app as controller
 
 from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
+from datetime import timedelta
 
 app = Flask(__name__)
 
@@ -15,6 +16,7 @@ app.secret_key = SECRET
 
 #jwt
 app.config["JWT_SECRET_KEY"] = SECRET  # 设置 jwt 的秘钥
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(seconds=JWT_ACCESS_TOKEN_EXPIRES) 
 
 jwt = JWTManager(app)
 
