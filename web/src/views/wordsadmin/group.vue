@@ -1,21 +1,16 @@
 <template>
   <el-container>
-    <el-header class="header">
-      <router-link :to="{ name: 'wordsadmin_book' }">
-        <el-link :underline="false"
-          ><el-icon :size="25"><Back /></el-icon
-        ></el-link>
-      </router-link>
-      <span>分组管理</span>
-      <div class="bookname">
-        <span>{{ bookname }}</span>
-      </div>
-    </el-header>
+    <WordsadminHeader
+      title="分组管理"
+      :router_to="{ name: 'wordsadmin_book' }"
+      :bookname="bookname"
+    />
     <el-main>
       <div class="tools-bar">
         <el-button type="primary" @click="addGroup_open()">添加分组</el-button>
       </div>
-      <el-table :data="groupsData" border>
+      <el-skeleton v-if="!groupsData" animated />
+      <el-table v-else-if="groupsData" :data="groupsData" border>
         <el-table-column prop="groupid" label="id" />
         <el-table-column prop="name" label="分组名" />
         <el-table-column fixed="right" label="操作">
@@ -60,6 +55,8 @@
 
 <script>
 import API from '@/network/API'
+import WordsadminHeader from '@/components/wordsadmin_header.vue'
+
 export default {
   name: 'wordsadmin_groups',
   data() {
@@ -67,7 +64,7 @@ export default {
     return {
       bookid: null,
       bookname: '',
-      groupsData: [],
+      groupsData: null, // list
       addGroup: {
         show: false,
         title: '添加组',
@@ -78,6 +75,7 @@ export default {
       },
     }
   },
+  components: { WordsadminHeader },
   mounted: function () {
     this.bookid = this.$route.params.bookid
 
@@ -228,6 +226,7 @@ export default {
   margin: 4px;
   float: right;
 }
+.el-skeleton,
 .el-table {
   width: 100%;
   height: calc(100vh - 60px - 20px * 2 - 40px - 5px);

@@ -1,18 +1,12 @@
 <template>
   <el-container>
-    <el-header class="header">
-      <router-link :to="{ name: 'index' }">
-        <el-link :underline="false"
-          ><el-icon :size="25"><Back /></el-icon
-        ></el-link>
-      </router-link>
-      <span>书籍管理</span>
-    </el-header>
+    <WordsadminHeader title="书籍管理" :router_to="{ name: 'index' }" />
     <el-main>
       <div class="tools-bar">
         <el-button type="primary" @click="addBook_open()">添加书籍</el-button>
       </div>
-      <el-table :data="booksData" border>
+      <el-skeleton v-if="!booksData" animated />
+      <el-table v-else-if="booksData" :data="booksData" border>
         <el-table-column prop="bookid" label="id" />
         <el-table-column prop="name" label="书名" />
         <el-table-column prop="description" label="描述" />
@@ -80,12 +74,14 @@
 
 <script>
 import API from '@/network/API'
+import WordsadminHeader from '@/components/wordsadmin_header.vue'
+
 export default {
   name: 'wordsadmin_books',
   data() {
     //数据
     return {
-      booksData: [],
+      booksData: null, // list
       addBook: {
         show: false,
         title: '添加书',
@@ -97,6 +93,7 @@ export default {
       },
     }
   },
+  components: { WordsadminHeader },
   mounted: function () {
     this.getBook()
   },
@@ -235,6 +232,7 @@ export default {
   margin: 4px;
   float: right;
 }
+.el-skeleton,
 .el-table {
   width: 100%;
   height: calc(100vh - 60px - 20px * 2 - 40px - 5px);

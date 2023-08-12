@@ -1,23 +1,30 @@
 <template>
   <el-container>
-    <el-header class="header">
-      <router-link
-        :to="{ name: 'wordsadmin_group', params: { bookid: bookid ? bookid : 0 } }"
-      >
-        <el-link :underline="false"
-          ><el-icon :size="25"><Back /></el-icon
-        ></el-link>
-      </router-link>
-      <span>单词管理</span>
-      <div class="bookname">
-        <span>{{ bookname }}</span> <span>{{ groupname }}</span>
-      </div>
-    </el-header>
+    <WordsadminHeader
+      title="单词管理"
+      :router_to="{
+        name: 'wordsadmin_group',
+        params: { bookid: bookid ? bookid : 0 },
+      }"
+      :bookname="bookname"
+      :groupname="groupname"
+    />
     <el-main>
       <div class="tools-bar">
-        <el-button type="primary" @click="$router.push({ name: 'wordsadmin_word_add', params: {groupid: groupid} });">添加单词</el-button>
+        <el-button
+          type="primary"
+          @click="
+            $router.push({
+              name: 'wordsadmin_word_add',
+              params: { groupid: groupid },
+            })
+          "
+        >
+          添加单词
+        </el-button>
       </div>
-      <el-table :data="wordsData" border>
+      <el-skeleton v-if="!wordsData" animated />
+      <el-table v-else-if="wordsData" :data="wordsData" border>
         <el-table-column prop="wordid" label="id" />
         <el-table-column prop="name" label="分组名" />
       </el-table>
@@ -27,6 +34,8 @@
 
 <script>
 import API from '@/network/API'
+import WordsadminHeader from '@/components/wordsadmin_header.vue'
+
 export default {
   name: 'wordsadmin_word',
   data() {
@@ -36,9 +45,10 @@ export default {
       bookname: '',
       groupid: null,
       groupname: '',
-      wordsData: [],
+      wordsData: null, // list
     }
   },
+  components: { WordsadminHeader },
   mounted: function () {
     this.groupid = this.$route.params.groupid
 
@@ -86,36 +96,6 @@ export default {
 </script>
 
 <style>
-.el-container {
-  background-color: #f2f2f2;
-}
-.el-header {
-  background-color: #fff;
-  position: fixed;
-  height: 58px;
-  width: 100%;
-  top: 0;
-  border-bottom: #e4e7ed 2px solid;
-  z-index: 10;
-}
-.el-header > span {
-  display: inline-block;
-  vertical-align: middle;
-  font-size: 1.5em;
-  font-weight: bold;
-  margin: 0.86rem;
-}
-.el-header > .bookname {
-  display: inline-block;
-  clear: both;
-}
-.el-header > .bookname span {
-  display: inline-block;
-  font-size: 8px;
-  padding: 2px;
-  color: #505050;
-  background: #f4f4f4;
-}
 .tools-bar {
   height: 40px;
   background-color: #fff;
@@ -131,6 +111,7 @@ export default {
   margin: 4px;
   float: right;
 }
+.el-skeleton,
 .el-table {
   width: 100%;
   height: calc(100vh - 60px - 20px * 2 - 40px - 5px);
