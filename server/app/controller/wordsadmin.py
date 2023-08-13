@@ -25,6 +25,10 @@ def wordsadmin_book_info():
     bookid = request.args["bookid"]
 
     book = Books.query.filter_by(id=bookid).first()
+
+    if not book:
+        return jsonify({ "code": 400, "msg": "查询失败！" })
+
     bookdata = {
         "bookid": book.id,
         "name": book.name,
@@ -101,7 +105,13 @@ def wordsadmin_book_edit():
 def wordsadmin_group():
     bookid = request.args["bookid"]
 
+    book = Books.query.filter_by(id=bookid).first()
+
+    if not book:
+        return jsonify({ "code": 400, "msg": "查询没有当前书！" })
+
     groups = Groups.query.filter_by(bookid=bookid).all()
+
     groupsdata = []
     for group in groups:
         groupsdata.append({
@@ -117,6 +127,9 @@ def wordsadmin_group_info():
     groupid = request.args["groupid"]
 
     group = Groups.query.filter_by(id=groupid).first()
+
+    if not group:
+        return jsonify({ "code": 400, "msg": "查询失败！" })
     #书
     book = Books.query.filter_by(id=group.bookid).first()
 
@@ -193,7 +206,13 @@ def wordsadmin_group_edit():
 def wordsadmin_word():
     groupid = request.args["groupid"]
 
+    group = Groups.query.filter_by(id=groupid).first()
+
+    if not group:
+        return jsonify({ "code": 400, "msg": "没有当前分组！" })
+
     words = Words.query.filter_by(groupid=groupid).all()
+
     wordsdata = []
     for word in words:
 

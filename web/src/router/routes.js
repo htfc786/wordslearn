@@ -38,11 +38,21 @@ const routes = [
     component: () => import('@/views/wordsadmin/group.vue'),
     meta: { title: '单词表-组管理', requireAuth:true, },
   },
+  { // 单词管理 没有groupid跳转到书管理
+    path: '/wordsadmin/word',
+    redirect: '/wordsadmin/book',
+  },
   { // 单词管理
     path: '/wordsadmin/word/:groupid',
     name: 'wordsadmin_word',
     component: () => import('@/views/wordsadmin/word.vue'),
     meta: { title: '单词表-单词管理', requireAuth:true, },
+  },
+  { // 添加单词
+    path: '/wordsadmin/word/:groupid/add',
+    name: 'wordsadmin_word_add',
+    component: () => import('@/views/wordsadmin/word_add.vue'),
+    meta: { title: '单词表-单词添加', requireAuth:true, },
   },
   {
     path: '/dictation/select',

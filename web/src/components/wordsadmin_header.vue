@@ -1,6 +1,6 @@
 <template>
   <el-header class="header">
-    <router-link :to="{ name: 'index' }">
+    <router-link :to="router_to">
       <el-link :underline="false"
         ><el-icon :size="25"><Back /></el-icon
       ></el-link>

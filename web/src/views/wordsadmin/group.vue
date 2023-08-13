@@ -10,6 +10,18 @@
         <el-button type="primary" @click="addGroup_open()">添加分组</el-button>
       </div>
       <el-skeleton v-if="!groupsData" animated />
+      <el-result
+        v-else-if="groupsData && hasGroupsData"
+        icon="error"
+        title="您请求的内容不存在！"
+        sub-title="请检查请求内容是否正确"
+      >
+        <template #extra>
+          <el-button type="primary" @click="$router.push({ name: 'index' })"
+            >返回首页</el-button
+          >
+        </template>
+      </el-result>
       <el-table v-else-if="groupsData" :data="groupsData" border>
         <el-table-column prop="groupid" label="id" />
         <el-table-column prop="name" label="分组名" />
@@ -65,6 +77,7 @@ export default {
       bookid: null,
       bookname: '',
       groupsData: null, // list
+      hasGroupsData: false,
       addGroup: {
         show: false,
         title: '添加组',
@@ -85,15 +98,23 @@ export default {
   methods: {
     getBookname() {
       const that = this
-      API.wordsadmin.books.info(this.bookid).then((e) => {
-        that.bookname = e.data.name
-      })
+      API.wordsadmin.books.info(this.bookid)
+        .then((e) => {
+          that.bookname = e.data.name
+        })
     },
     getGroup() {
       const that = this
-      API.wordsadmin.groups.get(this.bookid).then((e) => {
-        that.groupsData = e.data
-      })
+      API.wordsadmin.groups.get(this.bookid)
+        .then((e) => {
+          that.groupsData = e.data
+        })
+        .catch((e) => {
+          if (e.msg == "查询没有当前书！") {
+            that.groupsData = [];
+            that.hasGroupsData = true;  
+          }
+        })
     },
     addGroup_open() {
       this.addGroup.show = true
@@ -226,6 +247,7 @@ export default {
   margin: 4px;
   float: right;
 }
+.el-result,
 .el-skeleton,
 .el-table {
   width: 100%;

@@ -54,29 +54,37 @@ export function request(query) {
 		.request(query)
 		.then((res) => {
 			if (res.data.code === 401) {
-				nologin();
-				return Promise.reject(res.data)
+				return Promise.reject(res)
 			} else if (res.data.code === 500) {
-				return Promise.reject(res.data)
+				return Promise.reject(res)
 			} else if (res.data.code === 400) {
-				return Promise.reject(res.data)
+				return Promise.reject(res)
 			} else {
 				return Promise.resolve(res.data)
 			}
 		})
 		//对错误进行处理
 		.catch((e) => {
-			if (e.code === "ERR_NETWORK") {
+			if (e.status === 200) {
+				if (e.data.code === 401) {
+					nologin();
+					return Promise.reject(e.data)
+				} else if (e.data.code === 500) {
+					return Promise.reject(e.data)
+				} else if (e.data.code === 400) {
+					return Promise.reject(e.data)
+				}
+			} else if (e.code === "ERR_NETWORK") {
 				ElMessage.error('网络错误！接口请求超时')
 				return Promise.reject(e)
-			} else if (e.response.status === 401) {
+			} else if (e.status === 401) {
 				nologin();
 				return Promise.reject(e)
-			} else if (e.response.status === 422) {
+			} else if (e.status === 422) {
 				nologin();
 				return Promise.reject(e)
 			} else {
-				ElMessage.error('请求接口发生错误：' + e.response.status)
+				ElMessage.error('请求接口发生错误：' + e.status)
 				return Promise.reject(e)
 			}
 		})
