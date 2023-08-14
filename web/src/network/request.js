@@ -77,14 +77,22 @@ export function request(query) {
 			} else if (e.code === "ERR_NETWORK") {
 				ElMessage.error('网络错误！接口请求超时')
 				return Promise.reject(e)
-			} else if (e.status === 401) {
-				nologin();
+			} else if (e.code === "ECONNABORTED") {
+				ElMessage.error("服务异常请稍后重试 " + e.message)
 				return Promise.reject(e)
-			} else if (e.status === 422) {
-				nologin();
-				return Promise.reject(e)
+			} else if (e.code === "ERR_BAD_RESPONSE") {
+				if (e.response.status === 401) {
+					nologin();
+					return Promise.reject(e)
+				} else if (e.response.status === 422) {
+					nologin();
+					return Promise.reject(e)
+				} else {
+					ElMessage.error('请求接口发生错误：' + e.response.status)
+					return Promise.reject(e)
+				}
 			} else {
-				ElMessage.error('请求接口发生错误：' + e.status)
+				ElMessage.error(e.message)
 				return Promise.reject(e)
 			}
 		})

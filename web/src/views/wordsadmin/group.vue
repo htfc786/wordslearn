@@ -11,7 +11,7 @@
       </div>
       <el-skeleton v-if="!groupsData" animated />
       <el-result
-        v-else-if="groupsData && hasGroupsData"
+        v-else-if="groupsData && !hasGroupsData"
         icon="error"
         title="您请求的内容不存在！"
         sub-title="请检查请求内容是否正确"
@@ -77,7 +77,7 @@ export default {
       bookid: null,
       bookname: '',
       groupsData: null, // list
-      hasGroupsData: false,
+      hasGroupsData: true,
       addGroup: {
         show: false,
         title: '添加组',
@@ -112,7 +112,7 @@ export default {
         .catch((e) => {
           if (e.msg == "查询没有当前书！") {
             that.groupsData = [];
-            that.hasGroupsData = true;  
+            that.hasGroupsData = false;  
           }
         })
     },

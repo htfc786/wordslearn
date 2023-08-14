@@ -25,7 +25,7 @@
       </div>
       <el-skeleton v-if="!wordsData" animated />
       <el-result
-        v-else-if="wordsData && hasWordsData"
+        v-else-if="wordsData && !hasWordsData"
         icon="error"
         title="您请求的内容不存在！"
         sub-title="请检查请求内容是否正确"
@@ -36,9 +36,24 @@
           >
         </template>
       </el-result>
-      <el-table v-else-if="wordsData" :data="wordsData" border>
-        <el-table-column prop="wordid" label="id" />
-        <el-table-column prop="name" label="分组名" />
+      <el-table
+        v-else-if="wordsData"
+        :data="wordsData"
+        :row-class-name="wordRowColor"
+        border
+      >
+        <el-table-column type="index" />
+        <el-table-column prop="id" label="id" width="48px" />
+        <el-table-column prop="word" label="单词" />
+        <el-table-column
+          prop="type"
+          :formatter="formatWordType"
+          label="类型"
+          width="53px"
+        />
+        <el-table-column prop="pronounce" label="音标" />
+        <el-table-column prop="chinese" label="中文" />
+        <el-table-column prop="note" label="备注" />
       </el-table>
     </el-main>
   </el-container>
@@ -58,7 +73,7 @@ export default {
       groupid: null,
       groupname: '',
       wordsData: null, // list
-      hasWordsData: false,
+      hasWordsData: true,
     }
   },
   components: { WordsadminHeader },
@@ -68,28 +83,29 @@ export default {
     this.getGroupInfo()
     this.getWord()
   },
+  computed: {},
   methods: {
     getGroupInfo() {
       const that = this
-      API.wordsadmin.groups
-        .info(this.groupid)
-        .then((e) => {
-          that.groupname = e.data.group
-          that.bookid = e.data.book.bookid
-          that.bookname = e.data.book.name
-        })
+      API.wordsadmin.groups.info(this.groupid).then((e) => {
+        that.groupname = e.data.group
+        that.bookid = e.data.book.bookid
+        that.bookname = e.data.book.name
+      })
     },
     getWord() {
       const that = this
-      API.wordsadmin.words.get(this.groupid).then((e) => {
-        that.wordsData = e.data
-      })
-      .catch((e) => {
-        if (e.msg === "没有当前分组！") {
-          that.wordsData = [];
-          that.hasWordsData = true;  
-        }
-      })
+      API.wordsadmin.words
+        .get(this.groupid)
+        .then((e) => {
+          that.wordsData = e.data
+        })
+        .catch((e) => {
+          if (e.msg === '没有当前分组！') {
+            that.wordsData = []
+            that.hasWordsData = false
+          }
+        })
     },
     delWord(wordid, wordname) {
       const that = this
@@ -111,6 +127,15 @@ export default {
               that.$message.error(e.msg)
             })
         })
+    },
+    wordRowColor({ row, rowIndex }) {
+      if (!row.type) {
+        return 'phrase-row'
+      }
+      return ''
+    },
+    formatWordType(row, column, cellValue, index) {
+      return cellValue ? '单词' : '词组'
     },
   },
 }
@@ -137,5 +162,8 @@ export default {
 .el-table {
   width: 100%;
   height: calc(100vh - 60px - 20px * 2 - 40px - 5px);
+}
+.el-table .phrase-row {
+  --el-table-tr-bg-color: var(--el-color-primary-light-9);
 }
 </style>

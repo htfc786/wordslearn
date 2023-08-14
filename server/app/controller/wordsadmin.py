@@ -215,17 +215,13 @@ def wordsadmin_word():
 
     wordsdata = []
     for word in words:
-
-        word_type = "单词"
-        if (word.type == 0):
-            word_type = "词组"
-
         wordsdata.append({
             "id": word.id,
             "word": word.word,
             "pronounce": word.pronounce,
             "chinese": word.chinese,
-            "type": word_type,
+            "type": word.type,
+            "note": word.note,
         })
       
     return jsonify({ "code": 200, "msg": "查询成功！", "data": wordsdata })
@@ -240,7 +236,7 @@ def wordsadmin_word_add():
     word_note = request.json["note"]
     word_type = request.json["type"]
 
-    exists = Groups.query.filter_by(groupid=word_groupid).first()
+    exists = Groups.query.filter_by(id=word_groupid).first()
     if not exists:
         return jsonify({ "code": 400, "msg": "当前组不存在！" })
     
