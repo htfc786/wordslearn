@@ -57,9 +57,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="addWord()"
-              >添加</el-button
-            >
+            <el-button type="primary" @click="oneAddWord()">添加</el-button>
             <el-button @click="$refs.wordForm.resetFields()">重置</el-button>
           </el-form-item>
         </el-form>
@@ -67,24 +65,64 @@
         <el-form
           ref="batchForm"
           class="batchForm"
-          :model="wordForm"
+          :model="batchWordFrom"
           size="small"
         >
           <h1 class="from-text-1">批量添加</h1>
-          <el-input
-            v-model="wordForm.note"
-            type="textarea"
-            :autosize="{ minRows: 4, maxRows: 12 }"
-          />
           <el-form-item>
-            <el-button type="primary" @click="addWord()"
-              >添加</el-button
-            >
-            <el-button @click="$refs.wordForm.resetFields()">重置</el-button>
+            <el-input
+              v-model="batchWordFrom.batchText"
+              type="textarea"
+              :autosize="{ minRows: 4, maxRows: 12 }"
+            />
+          </el-form-item>
+          <el-form-item class="btn">
+            <el-button type="primary" @click="batchAddWord()">添加</el-button>
+            <el-button @click="batchWordFrom.batchText = ''">重置</el-button>
+            <el-button @click="showbatchWord = true">详细信息</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-main>
+
+    <el-dialog v-model="showbatchWord" title="添加信息">
+      <!-- 感谢：程序员小山与Bug https://github.com/sunzsh/vue-el-demo/blob/master/src/views/table-scroll-tr.vue -->
+      <el-table
+        ref="batchWordTable"
+        :data="batchWordTableData"
+        height="250"
+        border
+        :row-class-name="({ row }) => (row.loading ? 'is-loading-row' : '')"
+      >
+        <el-table-column prop="ind" label="序号" align="center" width="80">
+          <template #default="scope">
+            <el-icon v-if="scope.row.status === 'success'" style="color: green"
+              ><Check
+            /></el-icon>
+            <el-tooltip
+              v-else-if="scope.row.status === 'error'"
+              effect="dark"
+              :content="scope.row.errormsg"
+              placement="right"
+            >
+              <el-icon style="color: red"><CircleCloseFilled /></el-icon>
+            </el-tooltip>
+            <el-icon v-else-if="scope.row.loading"><Loading /></el-icon>
+            <span v-else>{{ scope.$index + 1 }}</span>
+            <i class="el-icon-loading"></i>
+          </template>
+        </el-table-column>
+        <el-table-column prop="word" label="单词" />
+        <el-table-column prop="type" label="类型" />
+        <el-table-column prop="pronounce" label="音标" />
+        <el-table-column prop="chinese" label="中文" />
+        <el-table-column prop="note" label="备注" />
+      </el-table>
+      <template #footer>
+        <span class="dialog-footer">
+        </span>
+      </template>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -92,6 +130,7 @@
 import { ElMessage } from 'element-plus'
 import API from '@/network/API'
 import WordsadminHeader from '@/components/wordsadmin_header.vue'
+import elTableScrollToRow from '@/components/elTableScrollToRow.js'
 
 export default {
   name: 'wordsadmin_word_add',
@@ -128,11 +167,16 @@ export default {
           { required: true, message: '请选择单词类型', trigger: 'change' },
         ],
       },
+      batchWordFrom: {
+        batchText: '',
+      },
+      showbatchWord: false,
+      batchWordTableData: [],
     }
   },
   components: { WordsadminHeader },
   mounted: function () {
-    this.groupid =  this.$route.params.groupid
+    this.groupid = this.$route.params.groupid
 
     this.getGroupInfo()
   },
@@ -147,35 +191,192 @@ export default {
           that.bookname = e.data.book.name
         })
         .catch((e) => {
-          that.hasWordsData = false;
+          that.hasWordsData = false
         })
     },
-    addWord() {
+    async addWord() {
       const that = this
-      this.$refs.wordForm.validate((valid, fields) => {
-        if (valid) {
-          API.wordsadmin.words.add(
-            that.groupid,
-            that.wordForm.word,
-            that.wordForm.pronounce,
-            that.wordForm.chinese,
-            that.wordForm.note,
-            that.wordForm.type,
-          )
-            .then(e=>{
-              ElMessage.success('添加成功');
-              that.$refs.wordForm.resetFields()
-              
+      return new Promise((resolve, reject) => {
+        this.$refs.wordForm.validate((valid, fields) => {
+          if (valid) {
+            API.wordsadmin.words
+              .add(
+                that.groupid,
+                that.wordForm.word,
+                that.wordForm.pronounce,
+                that.wordForm.chinese,
+                that.wordForm.note,
+                that.wordForm.type
+              )
+              .then((e) => {
+                // ElMessage.success(e.msg)
+                resolve({word: that.wordForm.word, message: e.msg })
+                that.$refs.wordForm.resetFields()
+              })
+          } else {
+            Object.values(fields).forEach((item, index) => {
+              item.forEach((item, index) => {
+                console.log(item)
+                // ElMessage.error(msgHead + item.message)
+                reject({word: that.wordForm.word, message: item.message })
+              })
             })
-        } else {
-          ElMessage.error(fields);
-        }
+          }
+        })
       });
-      
     },
+    oneAddWord() {
+      this.addWord()
+        .then(({word, message})=>{
+          var msgHead = word + (word ? ': ' : '')
+          ElMessage.success(msgHead + message)
+        })
+        .catch(({word, message})=>{
+          var msgHead = word + (word ? ': ' : '')
+          ElMessage.error(msgHead + message);
+        })
+    },
+    async batchAddWord() {
+      var wordDataList = this.batchWordFrom.batchText.split('\n')
+      wordDataList.forEach((item, index) => {
+        if (!item) {
+          wordDataList.splice(index, 1)
+        }
+      })
 
+      // 处理wordData数据
+      var wordData = [] //最终数据
+      for (var i = 0; i < wordDataList.length; i++) {
+        var wordDataListRow = wordDataList[i]
+        if (!wordDataListRow) {
+          continue
+        } //空字符串
+
+        //csv格式 没有空着
+        // 单词,类型(1-单词\0-词组),音标,中文,备注,音频id,音频起始,音频结束
+        var readDataList = wordDataListRow.split(',')
+        // 处理""问题
+        var dataList = []
+        var textBuffer = '',
+          saveTextBuffer = false
+        readDataList.forEach((item, index) => {
+          if (saveTextBuffer) {
+            textBuffer += item
+          }
+          if (item.indexOf('"') === 0) {
+            textBuffer += item
+            saveTextBuffer = true
+          } else if (item.indexOf('"') !== -1) {
+            saveTextBuffer = false
+            dataList.push(textBuffer.slice(0, textBuffer.length - 1).slice(1))
+          } else {
+            dataList.push(item)
+          }
+        })
+
+        if (dataList.length !== 8) {
+          //数据格式错误
+          wordData.push({ error: '行：' + wordDataListRow + ' 数据格式错误' })
+          continue
+        }
+        //音频id,音频起始,音频结束 暂未涉及 ###
+        wordData.push({
+          word: dataList[0], // 单词
+          type: parseInt(dataList[1], 10), // 单词类型 1-单词 0-词组
+          pronounce: dataList[2], // 音标
+          chinese: dataList[3], // 中文
+          note: dataList[4], // 备注
+        })
+      }
+      // 放batchWordTableData里
+      const that = this
+      this.batchWordTableData = []
+      wordData.forEach((item, index) => {
+        if (item.error) {
+          this.batchWordTableData.push({
+            word: '',
+            type: '',
+            pronounce: '',
+            chinese: '',
+            note: '',
+            status: 'error',
+            loading: false,
+            errormsg: item.error,
+          })
+          return
+        }
+        this.batchWordTableData.push({
+          word: item.word,
+          type: item.type,
+          pronounce: item.pronounce,
+          chinese: item.chinese,
+          note: item.note,
+
+          loading: false,
+          status: '',
+        })
+      })
+      //显示窗口
+      this.showbatchWord = true
+
+      //开始添加
+      for (var i = 0; i < this.batchWordTableData.length; i++) {
+        var item = this.batchWordTableData[i]
+
+        item.loading = true;
+
+        console.log(this.$refs,this.$refs.batchWordTable)
+        // 滚动到这一行
+        if (this.$refs.batchWordTable) {
+          elTableScrollToRow(this.$refs.batchWordTable, item)
+        }
+
+        if (item.errormsg) {
+          item.loading = false;
+          continue;
+        }
+        // 赋值
+        this.wordForm.word = item.word
+        this.wordForm.pronounce = item.pronounce
+        this.wordForm.chinese = item.chinese
+        this.wordForm.note = item.note
+        this.wordForm.type = item.type
+
+        //添加
+        await this.addWord()
+          .then(({word, message})=>{
+            item.status = "success";
+            item.loading = false;
+          })
+          .catch(({word, message})=>{
+            var msgHead = word + (word ? ': ' : '')
+
+            ElMessage.error(msgHead + message)
+            item.errormsg = message;
+            item.status = "error";
+            item.loading = false;
+          })
+      }
+      ElMessage.success("数据添加成功！具体请见详情信息")
+      this.batchWordFrom.batchText = '';
+    },
   },
 }
+/* 测试数据：单词,类型(1-单词\0-词组),音标,中文,备注,音频id,音频起始,音频结束
+man-made,1,/'mæn'med/,人造的,,,,
+discussion,1,/dɪ'skʌʃn/,讨论，商讨,,,,
+opinion,1,/ə'pɪnjən/,主张，看法,,,,
+in one’s opinion,0,,按照某人的观点,,,,
+shine,1,/ʃaɪn/,照耀,(shone shone， shined shined),,,
+electricity,1,"/ɪ,lek'trɪsəti/",电,,,,
+
+electricity,/ɪ,lek'trɪsəti/,1,电,,,,
+
+millions of,大量的；无数的,
+below,/bɪ'ləʊ/,在下面，在…下面,,,,,,,,
+sign     /saɪn/     迹象，标志，招牌
+beside    在…..旁边，在…附近
+*/
 </script>
 
 <style>
@@ -187,6 +388,7 @@ export default {
 .el-main {
   margin-top: 60px;
 }
+
 .tools-bar > .el-select {
   margin: 4px;
 }
@@ -218,17 +420,21 @@ export default {
   font-size: 30px;
 }
 .batchForm {
-  padding: 30px 40px 0 40px;
+  padding: 30px 20px 0 20px;
   max-width: 500px;
   margin: 0 auto;
 }
 .batchForm .from-text-1 {
   display: block;
-  margin: 0px 0 20px 40px;
+  margin: 0px 0 20px 60px;
   font-size: 30px;
 }
-.batchForm .el-form-item {
+.batchForm .btn {
   margin-top: 18px;
-  margin-left: 60px;
+  margin-left: 80px;
+}
+.el-dialog {
+  --el-dialog-width: 80%;
+  --el-dialog-margin-top: 10vh;
 }
 </style>
