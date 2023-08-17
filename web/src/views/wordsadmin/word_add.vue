@@ -90,7 +90,7 @@
       <el-table
         ref="batchWordTable"
         :data="batchWordTableData"
-        height="250"
+        height="300"
         border
         :row-class-name="({ row }) => (row.loading ? 'is-loading-row' : '')"
       >
@@ -216,7 +216,6 @@ export default {
           } else {
             Object.values(fields).forEach((item, index) => {
               item.forEach((item, index) => {
-                console.log(item)
                 // ElMessage.error(msgHead + item.message)
                 reject({word: that.wordForm.word, message: item.message })
               })
@@ -324,8 +323,6 @@ export default {
         var item = this.batchWordTableData[i]
 
         item.loading = true;
-
-        console.log(this.$refs,this.$refs.batchWordTable)
         // 滚动到这一行
         if (this.$refs.batchWordTable) {
           elTableScrollToRow(this.$refs.batchWordTable, item)
@@ -362,21 +359,6 @@ export default {
     },
   },
 }
-/* 测试数据：单词,类型(1-单词\0-词组),音标,中文,备注,音频id,音频起始,音频结束
-man-made,1,/'mæn'med/,人造的,,,,
-discussion,1,/dɪ'skʌʃn/,讨论，商讨,,,,
-opinion,1,/ə'pɪnjən/,主张，看法,,,,
-in one’s opinion,0,,按照某人的观点,,,,
-shine,1,/ʃaɪn/,照耀,(shone shone， shined shined),,,
-electricity,1,"/ɪ,lek'trɪsəti/",电,,,,
-
-electricity,/ɪ,lek'trɪsəti/,1,电,,,,
-
-millions of,大量的；无数的,
-below,/bɪ'ləʊ/,在下面，在…下面,,,,,,,,
-sign     /saɪn/     迹象，标志，招牌
-beside    在…..旁边，在…附近
-*/
 </script>
 
 <style>

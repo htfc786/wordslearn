@@ -54,9 +54,64 @@
         <el-table-column prop="pronounce" label="音标" />
         <el-table-column prop="chinese" label="中文" />
         <el-table-column prop="note" label="备注" />
+        <el-table-column fixed="right" label="操作">
+          <template #default="scope">
+            <el-button
+              @click="editWord_open(scope.row.id)"
+              size="small"
+              >编辑</el-button
+            >
+            <el-button
+              @click="delWord(scope.row.id, scope.row.word)"
+              type="danger"
+              size="small"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
       </el-table>
     </el-main>
   </el-container>
+
+  <el-dialog v-model="addWord.show" :title="addWord.title">
+    <el-form
+      ref="addWord"
+      class="addWord"
+      :model="addWord"
+      :rules="addWordRules"
+      label-width="100px"
+    >
+      <el-form-item label="单词" prop="word">
+        <el-input v-model="addWord.word" />
+      </el-form-item>
+      <el-form-item label="音标" prop="pronounce">
+        <el-input v-model="addWord.pronounce" />
+      </el-form-item>
+      <el-form-item label="中文" prop="chinese">
+        <el-input v-model="addWord.chinese" type="textarea" autosize />
+      </el-form-item>
+      <el-form-item label="备注" prop="note">
+        <el-input
+          v-model="addWord.note"
+          type="textarea"
+          :autosize="{ minRows: 2 }"
+        />
+      </el-form-item>
+      <el-form-item label="单词类型" prop="type">
+        <el-radio-group v-model="addWord.type">
+          <el-radio-button :label="true" border>单词</el-radio-button>
+          <el-radio-button :label="false" border>词组</el-radio-button>
+        </el-radio-group>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="addWord.show = false">关闭</el-button>
+        <el-button @click="$refs.addWord.resetFields()">重置</el-button>
+        <el-button type="primary" @click="editWord_close()">完成</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script>
@@ -74,6 +129,36 @@ export default {
       groupname: '',
       wordsData: null, // list
       hasWordsData: true,
+      addWord: {
+        show: false,
+        title: '添加组',
+        type: 'add',
+        groupid: 0,
+        wordid: 0,
+        word: '', // 单词
+        pronounce: '', // 音标
+        chinese: '', // 中文
+        note: '', // 备注
+        type: 1, // 单词类型 1-单词 0-词组
+      },
+      addWordRules: {
+        word: [
+          { required: true, message: '单词不能为空', trigger: 'blur' },
+          { min: 1, max: 64, message: '请输入正确的单词', trigger: 'blur' },
+        ],
+        pronounce: [
+          { max: 64, message: '音标过长！最多64个字符', trigger: 'blur' },
+        ],
+        chinese: [
+          { max: 128, message: '中文过长！最多128个字符', trigger: 'blur' },
+        ],
+        note: [
+          { max: 255, message: '备注过长！最多255个字符', trigger: 'blur' },
+        ],
+        type: [
+          { required: true, message: '请选择单词类型', trigger: 'change' },
+        ],
+      },
     }
   },
   components: { WordsadminHeader },
@@ -107,7 +192,7 @@ export default {
           }
         })
     },
-    delWord(wordid, wordname) {
+    delWord(wordid, word) {
       const that = this
       this.$messageBox
         .confirm('确定要删除 ' + word + ' 吗？', '删除操作', {
@@ -136,6 +221,55 @@ export default {
     },
     formatWordType(row, column, cellValue, index) {
       return cellValue ? '单词' : '词组'
+    },
+    editWord_open(wordid) {
+      this.addWord.show = true
+      this.addWord.title = '编辑单词'
+      this.addWord.type = 'edit'
+
+      this.addWord.wordid = wordid
+
+      const wordsDataRes = this.wordsData.find((currentValue)=>{
+        return currentValue.id == wordid;
+      })
+      console.log(wordsDataRes)
+      this.addWord.word = wordsDataRes.word
+      this.addWord.pronounce = wordsDataRes.pronounce
+      this.addWord.chinese = wordsDataRes.chinese
+      this.addWord.note = wordsDataRes.note
+      this.addWord.type = wordsDataRes.type
+    },
+    editWord_close() {
+      this.addWord.show = false
+
+      const that = this
+      this.$refs.addWord.validate((valid, fields) => {
+        if (valid) {
+          API.wordsadmin.words
+            .edit(
+              that.addWord.wordid, 
+              that.addWord.word,
+              that.addWord.pronounce,
+              that.addWord.chinese,
+              that.addWord.note,
+              that.addWord.type,
+            )
+            .then((e) => {
+              that.$message.success(e.msg)
+
+              that.getWord()
+            })
+            .catch((e) => {
+              that.$message.error(e.msg)
+            })
+        } else {
+          Object.values(fields).forEach((item, index) => {
+            item.forEach((item, index) => {
+              that.$message.error(item.message)
+            })
+          })
+        }
+      })
     },
   },
 }

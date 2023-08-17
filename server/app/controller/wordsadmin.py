@@ -278,7 +278,7 @@ def wordsadmin_word_edit():
     word_note = request.json["note"]
     word_type = request.json["type"]
     
-    word = Groups.query.filter_by(id=word_wordid).first()
+    word = Words.query.filter_by(id=word_wordid).first()
     word.word=word_word
     word.pronounce=word_pronounce
     word.chinese=word_chinese

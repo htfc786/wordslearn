@@ -98,15 +98,19 @@ export default {
           type: type,
         })
       },
-      del: function (wodrid) {
+      del: function (wordid) {
         return post('/wordsadmin/word/del', {
-          wodrid: wodrid,
+          wordid: wordid,
         })
       },
-      edit: function (groupid, name) {
+      edit: function (wordid, word, pronounce, chinese, note, type) {
         return post('/wordsadmin/word/edit', {
-          groupid: groupid,
-          name: name,
+          wordid: wordid,
+          word: word,
+          pronounce: pronounce,
+          chinese: chinese,
+          note: note,
+          type: type,
         })
       },
     },
