@@ -22,6 +22,7 @@
         >
           添加单词
         </el-button>
+        <el-button type="danger" @click="delCheckWord()">删除所单词</el-button>
       </div>
       <el-skeleton v-if="!wordsData" animated />
       <el-result
@@ -41,9 +42,11 @@
         :data="wordsData"
         :row-class-name="wordRowColor"
         border
+        @selection-change="wordDataCheck"
       >
+        <el-table-column type="selection" width="40"/>
         <el-table-column type="index" />
-        <el-table-column prop="id" label="id" width="48px" />
+        <!-- <el-table-column prop="id" label="id" width="48px" /> -->
         <el-table-column prop="word" label="单词" />
         <el-table-column
           prop="type"
@@ -159,6 +162,7 @@ export default {
           { required: true, message: '请选择单词类型', trigger: 'change' },
         ],
       },
+      checkIdList: [],
     }
   },
   components: { WordsadminHeader },
@@ -270,6 +274,45 @@ export default {
           })
         }
       })
+    },
+    wordDataCheck(val) {
+      var checklist = [];
+      for (var i = 0; i < val.length; i++) {
+        checklist.push(val[i].id);
+      }
+      this.checkIdList = checklist;
+    },
+    delCheckWord(){
+      if (!this.checkIdList.length){
+        this.$message.error('请选择单词！');
+        return;
+      }
+      const that = this
+      this.$messageBox.confirm('确定要删除所选的 '+this.checkIdList.length+' 个单词吗？', '批量删除', { confirmButtonText: '删除', cancelButtonText: '取消', type: 'warning' })
+        .then(async () => {
+          for(var i=0;i<that.checkIdList.length;i++){
+            var wordid = that.checkIdList[i]
+
+            const wordsDataRes = this.wordsData.find((currentValue)=>{
+              return currentValue.id == wordid;
+            })
+            var msgHead = '';
+            if (wordsDataRes) {
+              msgHead = wordsDataRes.word + ': ';
+            }
+
+            const res = await API.wordsadmin.words.del(wordid)
+            if (res.code == 200) {
+              that.$message.success(msgHead + res.msg)
+            } else {
+              that.$message.error(msgHead + res.msg)
+            }
+          }
+
+          that.$message.success('批量删除完成！');
+          that.getWord()
+          that.checkIdList = []
+        })
     },
   },
 }
