@@ -5,9 +5,11 @@ from flask import Blueprint
 from ..db import *
 from ..tools import *
 
+from ..config import OPEN_FILE_SERVER
+
 app = Blueprint("controller", __name__)
 
 from . import user, wordsadmin
 
-
-
+if OPEN_FILE_SERVER:
+    from . import upload

@@ -7,4 +7,5 @@ DBUSERNAME = "root" # 数据库用户名
 DBPASSWORD = "root" # 数据库密码 请改成你自己的
 DBDATABASE = "wordslearn" # 数据库名称
 JWT_ACCESS_TOKEN_EXPIRES = 60 * 60 * 24 * 7 #jwt过期时间 这里设置7天
-UPLODAD_FILE_SAVE = "F:/test/"
+UPLODAD_FILE_SAVE = "F:/test/" # 文件存储路径
+OPEN_FILE_SERVER = True #是否开启文件服务（上线不建议开启，如果不开启可使用nginx等）
