@@ -56,6 +56,15 @@
               <el-radio-button :label="0" border>词组</el-radio-button>
             </el-radio-group>
           </el-form-item>
+          <el-form-item label="音频id" prop="sound_id">
+            <el-input v-model="wordForm.sound_id" />
+          </el-form-item>
+          <el-form-item label="音频起始" prop="sound_start">
+            <el-input v-model="wordForm.sound_start" />
+          </el-form-item>
+          <el-form-item label="音频结束" prop="sound_end">
+            <el-input v-model="wordForm.sound_end" />
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="oneAddWord()">添加</el-button>
             <el-button @click="$refs.wordForm.resetFields()">重置</el-button>
@@ -117,6 +126,9 @@
         <el-table-column prop="pronounce" label="音标" />
         <el-table-column prop="chinese" label="中文" />
         <el-table-column prop="note" label="备注" />
+        <el-table-column prop="sound_id" label="音频id" />
+        <el-table-column prop="sound_start" label="音频起始" />
+        <el-table-column prop="sound_end" label="音频结束" />
       </el-table>
       <template #footer>
         <span class="dialog-footer">
@@ -148,6 +160,9 @@ export default {
         chinese: '', // 中文
         note: '', // 备注
         type: 1, // 单词类型 1-单词 0-词组
+        sound_id: '', // 音频id
+        sound_start: '', // 音频起始
+        sound_end: '', // 音频结束
       },
       wordFormRules: {
         word: [
@@ -206,7 +221,10 @@ export default {
                 that.wordForm.pronounce,
                 that.wordForm.chinese,
                 that.wordForm.note,
-                that.wordForm.type
+                that.wordForm.type,
+                that.wordForm.sound_id,
+                that.wordForm.sound_start,
+                that.wordForm.sound_end,
               )
               .then((e) => {
                 // ElMessage.success(e.msg)
@@ -285,6 +303,9 @@ export default {
           pronounce: dataList[2], // 音标
           chinese: dataList[3], // 中文
           note: dataList[4], // 备注
+          sound_id: dataList[5], // 音频id
+          sound_start: dataList[6], // 起始
+          sound_end: dataList[7], // 结束
         })
       }
       // 放batchWordTableData里
@@ -298,6 +319,9 @@ export default {
             pronounce: '',
             chinese: '',
             note: '',
+            sound_id: '',
+            sound_start: '',
+            sound_end: '',
             status: 'error',
             loading: false,
             errormsg: item.error,
@@ -310,6 +334,9 @@ export default {
           pronounce: item.pronounce,
           chinese: item.chinese,
           note: item.note,
+          sound_id: item.sound_id,
+          sound_start: item.sound_start,
+          sound_end: item.sound_end,
 
           loading: false,
           status: '',
@@ -338,6 +365,9 @@ export default {
         this.wordForm.chinese = item.chinese
         this.wordForm.note = item.note
         this.wordForm.type = item.type
+        this.wordForm.sound_id = item.sound_id
+        this.wordForm.sound_start = item.sound_start
+        this.wordForm.sound_end = item.sound_end
 
         //添加
         await this.addWord()

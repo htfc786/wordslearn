@@ -90,7 +90,17 @@ export default {
           groupid: groupid,
         })
       },
-      add: function (groupid, word, pronounce, chinese, note, type) {
+      add: function (
+        groupid,
+        word,
+        pronounce,
+        chinese,
+        note,
+        type,
+        sound_id,
+        sound_start,
+        sound_end
+      ) {
         return post('/wordsadmin/word/add', {
           groupid: groupid,
           word: word,
@@ -98,6 +108,9 @@ export default {
           chinese: chinese,
           note: note,
           type: type,
+          sound_id: sound_id,
+          sound_start: sound_start,
+          sound_end: sound_end,
         })
       },
       del: function (wordid) {
@@ -105,7 +118,17 @@ export default {
           wordid: wordid,
         })
       },
-      edit: function (wordid, word, pronounce, chinese, note, type) {
+      edit: function (
+        wordid,
+        word,
+        pronounce,
+        chinese,
+        note,
+        type,
+        sound_id,
+        sound_start,
+        sound_end
+      ) {
         return post('/wordsadmin/word/edit', {
           wordid: wordid,
           word: word,
@@ -113,6 +136,9 @@ export default {
           chinese: chinese,
           note: note,
           type: type,
+          sound_id: sound_id,
+          sound_start: sound_start,
+          sound_end: sound_end,
         })
       },
     },
@@ -121,24 +147,20 @@ export default {
         return get('/wordsadmin/sound', {})
       },
       add: function (name, file, onProgress, onFinish, onError) {
-        return uploadFile('/wordsadmin/sound/add', {
-          name: name,
-          file: file,
-        }, onProgress, onFinish, onError)
+        return uploadFile(
+          '/wordsadmin/sound/add',
+          {
+            name: name,
+            file: file,
+          },
+          onProgress,
+          onFinish,
+          onError
+        )
       },
       del: function (soundid) {
         return post('/wordsadmin/sound/del', {
           soundid: soundid,
-        })
-      },
-      edit: function (wordid, word, pronounce, chinese, note, type) {
-        return post('/wordsadmin/word/edit', {
-          wordid: wordid,
-          word: word,
-          pronounce: pronounce,
-          chinese: chinese,
-          note: note,
-          type: type,
         })
       },
     },

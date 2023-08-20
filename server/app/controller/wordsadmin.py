@@ -145,7 +145,6 @@ def wordsadmin_group_info():
       
     return jsonify({ "code": 200, "msg": "查询成功！", "data": bookdata })
 
-
 @app.route('/wordsadmin/group/add', methods=['POST'])
 @jwt_required()
 def wordsadmin_group_add():
@@ -223,10 +222,13 @@ def wordsadmin_word():
             "chinese": word.chinese,
             "type": word.type,
             "note": word.note,
+            "sound_id": word.sound_id,
+            "sound_start": word.sound_start,
+            "sound_end": word.sound_end,
         })
       
     return jsonify({ "code": 200, "msg": "查询成功！", "data": wordsdata })
-#####
+
 @app.route('/wordsadmin/word/add', methods=['POST'])
 @jwt_required()
 def wordsadmin_word_add():
@@ -236,6 +238,9 @@ def wordsadmin_word_add():
     word_chinese = request.form["chinese"]
     word_note = request.form["note"]
     word_type = request.form["type"]
+    word_sound_id = request.form["sound_id"]
+    word_sound_start = request.form["sound_start"]
+    word_sound_end = request.form["sound_end"]
 
     exists = Groups.query.filter_by(id=word_groupid).first()
     if not exists:
@@ -251,6 +256,9 @@ def wordsadmin_word_add():
         type=word_type,
         groupid=word_groupid,
         bookid=word_bookid,
+        sound_id=word_sound_id,
+        sound_start=word_sound_start,
+        sound_end=word_sound_end,
     )
     db.session.add(word)
     db.session.commit()
@@ -278,6 +286,9 @@ def wordsadmin_word_edit():
     word_chinese = request.form["chinese"]
     word_note = request.form["note"]
     word_type = request.form["type"]
+    word_sound_id = request.form["sound_id"]
+    word_sound_start = request.form["sound_start"]
+    word_sound_end = request.form["sound_end"]
     
     word = Words.query.filter_by(id=word_wordid).first()
     word.word=word_word
@@ -285,6 +296,9 @@ def wordsadmin_word_edit():
     word.chinese=word_chinese
     word.note=word_note
     word.type=word_type
+    word.sound_id=word_sound_id,
+    word.sound_start=word_sound_start,
+    word.sound_end=word_sound_end,
 
     db.session.commit()
 
@@ -295,10 +309,11 @@ def wordsadmin_word_edit():
 def wordsadmin_sound():
     sounds = Sounds.query.all()
     soundsdata = []
-    for book in sounds:
+    for sound in sounds:
         soundsdata.append({
-            "soundid": book.id,
-            "name": book.name,
+            "soundid": sound.id,
+            "name": sound.name,
+            "url": sound.url,
         })
       
     return jsonify({ "code": 200, "msg": "查询成功！", "data": soundsdata })

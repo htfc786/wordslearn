@@ -22,7 +22,7 @@
         >
           添加单词
         </el-button>
-        <el-button type="danger" @click="delCheckWord()">删除所单词</el-button>
+        <el-button type="danger" @click="delCheckWord()">删除所选单词</el-button>
       </div>
       <el-skeleton v-if="!wordsData" animated />
       <el-result
@@ -106,6 +106,15 @@
           <el-radio-button :label="false" border>词组</el-radio-button>
         </el-radio-group>
       </el-form-item>
+      <el-form-item label="音频id" prop="sound_id">
+        <el-input v-model="addWord.sound_id" />
+      </el-form-item>
+      <el-form-item label="音频起始" prop="sound_start">
+        <el-input v-model="addWord.sound_start" />
+      </el-form-item>
+      <el-form-item label="音频结束" prop="sound_end">
+        <el-input v-model="addWord.sound_end" />
+      </el-form-item>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
@@ -143,6 +152,9 @@ export default {
         chinese: '', // 中文
         note: '', // 备注
         type: 1, // 单词类型 1-单词 0-词组
+        sound_id: '', // 音频id
+        sound_start: '', // 音频起始
+        sound_end: '', // 音频结束
       },
       addWordRules: {
         word: [
@@ -242,6 +254,9 @@ export default {
       this.addWord.chinese = wordsDataRes.chinese
       this.addWord.note = wordsDataRes.note
       this.addWord.type = wordsDataRes.type
+      this.addWord.sound_id = wordsDataRes.sound_id
+      this.addWord.sound_start = wordsDataRes.sound_start
+      this.addWord.sound_end = wordsDataRes.sound_end
     },
     editWord_close() {
       this.addWord.show = false
@@ -257,6 +272,9 @@ export default {
               that.addWord.chinese,
               that.addWord.note,
               that.addWord.type,
+              that.addWord.sound_id,
+              that.addWord.sound_start,
+              that.addWord.sound_end,
             )
             .then((e) => {
               that.$message.success(e.msg)

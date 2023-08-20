@@ -7,7 +7,7 @@
       </div>
       <el-skeleton v-if="!soundsData" animated />
       <el-table v-else-if="soundsData" :data="soundsData" border>
-        <el-table-column prop="soundid" label="id" width="60px" />
+        <el-table-column prop="soundid" label="id" />
         <el-table-column prop="name" label="音频名" />
         <el-table-column fixed="right" label="操作" width="80px">
           <template #default="scope">
