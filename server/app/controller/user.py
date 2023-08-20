@@ -10,8 +10,8 @@ from . import created_salt, salt_password
 @app.route('/user/login', methods=['POST'])
 def user_login():
     # 1 获取各种参数
-    username = request.json["username"]
-    password = request.json["password"]
+    username = request.form["username"]
+    password = request.form["password"]
 
     # 2 查询盐值
     salt_query = Users.query.filter_by(username=username).first()
@@ -41,9 +41,9 @@ def user_login():
 @app.route('/user/register', methods=['POST'])
 def user_register():
     # 1 获取各种参数
-    username = request.json["username"]
-    password = request.json["password"]
-    confirm = request.json["confirm"]
+    username = request.form["username"]
+    password = request.form["password"]
+    confirm = request.form["confirm"]
 
     # 2 判断验证密码是否相等
     if password != confirm:

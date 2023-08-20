@@ -9,8 +9,13 @@
       <el-table v-else-if="soundsData" :data="soundsData" border>
         <el-table-column prop="soundid" label="id" />
         <el-table-column prop="name" label="音频名" />
-        <el-table-column fixed="right" label="操作" width="80px">
+        <el-table-column fixed="right" label="操作">
           <template #default="scope">
+            <el-button
+              @click="copySoundId(scope.row.soundid)"
+              size="small"
+              >复制id</el-button
+            >
             <el-button
               @click="delSound(scope.row.soundid, scope.row.name)"
               type="danger"
@@ -127,6 +132,30 @@ export default {
               that.$message.error(e.msg)
             })
         })
+    },
+    copySoundId(soundid){
+      var content = ""+soundid;
+      if (navigator.clipboard && window.isSecureContext) {
+        // navigator clipboard 需要https等安全上下文
+        // navigator clipboard 向剪贴板写文本
+        const that = this;
+        navigator.clipboard.writeText(content)
+          .then(function() {
+              that.$message.success("复制成功");
+          },
+          function() {
+              that.$message.error("复制失败");
+          });
+      } else {
+        let copy = (e)=>{
+          e.preventDefault()
+          e.clipboardData.setData('text/plain', content)
+          document.removeEventListener('copy',copy)
+        }
+        document.addEventListener('copy',copy)
+        document.execCommand("Copy");
+        this.$message.success("复制成功");
+      }
     },
   },
 }
