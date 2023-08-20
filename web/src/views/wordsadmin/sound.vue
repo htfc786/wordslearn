@@ -12,7 +12,7 @@
         <el-table-column fixed="right" label="操作" width="80px">
           <template #default="scope">
             <el-button
-              @click=""
+              @click="delSound(scope.row.soundid, scope.row.name)"
               type="danger"
               size="small"
               >删除</el-button

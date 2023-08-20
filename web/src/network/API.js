@@ -126,9 +126,9 @@ export default {
           file: file,
         }, onProgress, onFinish, onError)
       },
-      del: function (wordid) {
-        return post('/wordsadmin/word/del', {
-          wordid: wordid,
+      del: function (soundid) {
+        return post('/wordsadmin/sound/del', {
+          soundid: soundid,
         })
       },
       edit: function (wordid, word, pronounce, chinese, note, type) {

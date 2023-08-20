@@ -3,7 +3,7 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 
 from . import app
 from . import db, Books, Groups, Words, Sounds
-from . import save_file
+from . import save_file, del_file
 
 @app.route('/wordsadmin/book', methods=['GET'])
 @jwt_required()
@@ -314,7 +314,7 @@ def wordsadmin_sound_add():
     save_data = save_file(upload_file)
 
     filekey = save_data["key"]
-    url = "/upload/" + save_data["name"]
+    url = save_data["url"]
     
     sound = Sounds(
         name=name,
@@ -325,3 +325,25 @@ def wordsadmin_sound_add():
     db.session.commit()
     
     return jsonify({ "code": 200, "msg": "添加成功！" })
+
+@app.route('/wordsadmin/sound/del', methods=['POST'])
+@jwt_required()
+def wordsadmin_sound_del():
+    soundid = request.form["soundid"]
+
+    sound = Sounds.query.filter_by(id=soundid).first()
+
+    if not sound:
+        return jsonify({ "code": 400, "msg": "没有当前音频" })
+    
+    # 删除文件
+    filekey = sound.filekey
+    isDel = del_file(filekey)
+
+    if not isDel:
+        return jsonify({ "code": 400, "msg": "音频删除失败" })
+
+    db.session.delete(sound)
+    db.session.commit()
+
+    return jsonify({ "code": 200, "msg": "删除成功！" })
