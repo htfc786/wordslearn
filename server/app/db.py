@@ -48,6 +48,8 @@ class Books(db.Model):
 class Sounds(db.Model):
     __tablename__ = 'sounds'
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    name = db.Column(db.String(32), nullable=False)
     url = db.Column(db.String(2048), nullable=False)
+    filekey = db.Column(db.String(2048), nullable=True)
 
 

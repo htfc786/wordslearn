@@ -343,4 +343,7 @@ export default {
 .el-table .phrase-row {
   --el-table-tr-bg-color: var(--el-color-primary-light-9);
 }
+.el-table .phrase-row .el-table__cell {
+  background-color: var(--el-color-primary-light-9);
+}
 </style>

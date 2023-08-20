@@ -10,7 +10,7 @@
     </div>
   </div>
   <div class="main">
-    <div class="item">
+    <div class="item" @click="listen()">
       <div><el-icon><Headset /></el-icon></div>
       <span>听单词</span>
     </div>
@@ -26,6 +26,10 @@
   <div class="list">
     <router-link :to="{ name: 'wordsadmin' }" class="item">
       <span>单词表管理</span>
+      <el-icon><ArrowRightBold /></el-icon>
+    </router-link>
+    <router-link :to="{ name: 'wordsadmin_sound' }" class="item">
+      <span>音频管理</span>
       <el-icon><ArrowRightBold /></el-icon>
     </router-link>
     <div class="item">
@@ -55,6 +59,18 @@ export default {
     init_user_info(){
       this.view.uid = localStorage.getItem("userid");
       this.view.username = localStorage.getItem("username");
+    },
+    listen() {
+      // API.ttsApi.bd("vocabulary")
+      //   .then(res=>{
+      //     console.log(res)
+      //   })
+      const audio = new Audio("https://fanyi.baidu.com/gettts?lan=uk&text=vocabulary&spd=3&source=web")
+      audio.addEventListener("canplaythrough", (event) => {
+        /* 音频可以播放；如果权限允许则播放 */
+        audio.play();
+      });
+      console.log(audio)
     },
   },
 }

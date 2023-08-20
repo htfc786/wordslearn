@@ -2,7 +2,8 @@ from flask import request, jsonify
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
 from . import app
-from . import db, Books, Groups, Words
+from . import db, Books, Groups, Words, Sounds
+from . import save_file
 
 @app.route('/wordsadmin/book', methods=['GET'])
 @jwt_required()
@@ -41,9 +42,9 @@ def wordsadmin_book_info():
 @app.route('/wordsadmin/book/add', methods=['POST'])
 @jwt_required()
 def wordsadmin_book_add():
-    book_name = request.json["name"]
-    book_description = request.json["description"]
-    book_cover = request.json["cover"]
+    book_name = request.form["name"]
+    book_description = request.form["description"]
+    book_cover = request.form["cover"]
 
     if len(book_name) == 0 or len(book_name) > 32:
         return jsonify({ "code": 400, "msg": "请输入正确的书名" })
@@ -64,7 +65,7 @@ def wordsadmin_book_add():
 @app.route('/wordsadmin/book/del', methods=['POST'])
 @jwt_required()
 def wordsadmin_book_del():
-    bookid = request.json["bookid"]
+    bookid = request.form["bookid"]
 
     # 删除书下单词
     Words.query.filter_by(bookid=bookid).delete()
@@ -80,10 +81,10 @@ def wordsadmin_book_del():
 @app.route('/wordsadmin/book/edit', methods=['POST'])
 @jwt_required()
 def wordsadmin_book_edit():
-    bookid = request.json["bookid"]
-    book_name = request.json["name"]
-    book_description = request.json["description"]
-    book_cover = request.json["cover"]
+    bookid = request.form["bookid"]
+    book_name = request.form["name"]
+    book_description = request.form["description"]
+    book_cover = request.form["cover"]
 
     if len(book_name) == 0 or len(book_name) > 32:
         return jsonify({ "code": 400, "msg": "请输入正确的书名" })
@@ -148,8 +149,8 @@ def wordsadmin_group_info():
 @app.route('/wordsadmin/group/add', methods=['POST'])
 @jwt_required()
 def wordsadmin_group_add():
-    group_bookid = request.json["bookid"]
-    group_name = request.json["name"]
+    group_bookid = request.form["bookid"]
+    group_name = request.form["name"]
 
     if len(group_name) == 0 or len(group_name) > 32:
         return jsonify({ "code": 400, "msg": "请输入正确的组名" })
@@ -170,7 +171,7 @@ def wordsadmin_group_add():
 @app.route('/wordsadmin/group/del', methods=['POST'])
 @jwt_required()
 def wordsadmin_group_del():
-    groupid = request.json["groupid"]
+    groupid = request.form["groupid"]
 
     # 删除组下单词
     Words.query.filter_by(groupid=groupid).delete()
@@ -184,8 +185,8 @@ def wordsadmin_group_del():
 @app.route('/wordsadmin/group/edit', methods=['POST'])
 @jwt_required()
 def wordsadmin_group_edit():
-    groupid = request.json["groupid"]
-    group_name = request.json["name"]
+    groupid = request.form["groupid"]
+    group_name = request.form["name"]
 
     if len(group_name) == 0 or len(group_name) > 32:
         return jsonify({ "code": 400, "msg": "请输入正确的组名" })
@@ -229,12 +230,12 @@ def wordsadmin_word():
 @app.route('/wordsadmin/word/add', methods=['POST'])
 @jwt_required()
 def wordsadmin_word_add():
-    word_groupid = request.json["groupid"]
-    word_word = request.json["word"]
-    word_pronounce = request.json["pronounce"]
-    word_chinese = request.json["chinese"]
-    word_note = request.json["note"]
-    word_type = request.json["type"]
+    word_groupid = request.form["groupid"]
+    word_word = request.form["word"]
+    word_pronounce = request.form["pronounce"]
+    word_chinese = request.form["chinese"]
+    word_note = request.form["note"]
+    word_type = request.form["type"]
 
     exists = Groups.query.filter_by(id=word_groupid).first()
     if not exists:
@@ -259,7 +260,7 @@ def wordsadmin_word_add():
 @app.route('/wordsadmin/word/del', methods=['POST'])
 @jwt_required()
 def wordsadmin_word_del():
-    wordid = request.json["wordid"]
+    wordid = request.form["wordid"]
 
     # 删除单词
     word = Words.query.filter_by(id=wordid).first()
@@ -271,12 +272,12 @@ def wordsadmin_word_del():
 @app.route('/wordsadmin/word/edit', methods=['POST'])
 @jwt_required()
 def wordsadmin_word_edit():
-    word_wordid = request.json["wordid"]
-    word_word = request.json["word"]
-    word_pronounce = request.json["pronounce"]
-    word_chinese = request.json["chinese"]
-    word_note = request.json["note"]
-    word_type = request.json["type"]
+    word_wordid = request.form["wordid"]
+    word_word = request.form["word"]
+    word_pronounce = request.form["pronounce"]
+    word_chinese = request.form["chinese"]
+    word_note = request.form["note"]
+    word_type = request.form["type"]
     
     word = Words.query.filter_by(id=word_wordid).first()
     word.word=word_word
@@ -288,3 +289,39 @@ def wordsadmin_word_edit():
     db.session.commit()
 
     return jsonify({ "code": 200, "msg": "修改成功!" })
+
+@app.route('/wordsadmin/sound', methods=['GET'])
+@jwt_required()
+def wordsadmin_sound():
+    sounds = Sounds.query.all()
+    soundsdata = []
+    for book in sounds:
+        soundsdata.append({
+            "soundid": book.id,
+            "name": book.name,
+        })
+      
+    return jsonify({ "code": 200, "msg": "查询成功！", "data": soundsdata })
+
+@app.route('/wordsadmin/sound/add', methods=['POST'])
+@jwt_required()
+def wordsadmin_sound_add():
+    name = request.form["name"]
+
+    # 保存文件
+    upload_file = request.files['file']
+
+    save_data = save_file(upload_file)
+
+    filekey = save_data["key"]
+    url = "/upload/" + save_data["name"]
+    
+    sound = Sounds(
+        name=name,
+        url=url,
+        filekey=filekey,
+    )
+    db.session.add(sound)
+    db.session.commit()
+    
+    return jsonify({ "code": 200, "msg": "添加成功！" })

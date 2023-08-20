@@ -6,7 +6,7 @@ import CONF from '@/config'
 
 const service = axios.create({
   baseURL: CONF.API_BASE_URL, // api的base_url
-  timeout: 15000 // 请求超时时间
+  // timeout: 15000 // 请求超时时间
   // .... 其他信息
 })
 
@@ -80,7 +80,7 @@ export function request(query) {
 			} else if (e.code === "ECONNABORTED") {
 				ElMessage.error("服务异常请稍后重试 " + e.message)
 				return Promise.reject(e)
-			} else if (e.code === "ERR_BAD_RESPONSE") {
+			} else if (e.code === "ERR_BAD_RESPONSE" || e.code === "ERR_BAD_REQUEST") {
 				if (e.response.status === 401) {
 					nologin();
 					return Promise.reject(e)
@@ -98,11 +98,14 @@ export function request(query) {
 		})
 }
 
-//post请求  ----> json格式的post请求 
+//post请求
 export function post(url, params) {
 	return request({
 		url: url,
 		method: 'post',
+		headers: {
+			'Content-Type': 'multipart/form-data',
+		},
 		data: params,
 	})
 }
@@ -116,15 +119,30 @@ export function get(url, params) {
 	})
 }
 
-//post请求
-export function form(url, params, onUploadProgress) {
-	return request({
+//post请求 文件上传
+export function uploadFile(url, params, onProgress, onFinish, onError) {
+	const req = request({
 		url: url,
 		method: 'post',
 		data: params,
 		headers: {
 			'Content-Type': 'multipart/form-data',
 		},
-		onUploadProgress: onUploadProgress,
+		onUploadProgress: (e)=>{
+			const percent = Math.floor((e.loaded / e.total) * 100)
+			onProgress(percent)
+		},
 	})
+		.then((e)=>{
+			onFinish(e)
+		})
+		.catch((e)=>{
+			if (!axios.isCancel(e)) {
+				onError(e)
+			}
+		})
+
+	return function() { //停止请求用
+		request.cancel();
+	}
 }

@@ -1,4 +1,6 @@
-import { post, get, form } from '@/network/request'
+import { post, get, uploadFile } from '@/network/request'
+
+import axios from 'axios'
 
 export default {
   user: {
@@ -97,6 +99,32 @@ export default {
           note: note,
           type: type,
         })
+      },
+      del: function (wordid) {
+        return post('/wordsadmin/word/del', {
+          wordid: wordid,
+        })
+      },
+      edit: function (wordid, word, pronounce, chinese, note, type) {
+        return post('/wordsadmin/word/edit', {
+          wordid: wordid,
+          word: word,
+          pronounce: pronounce,
+          chinese: chinese,
+          note: note,
+          type: type,
+        })
+      },
+    },
+    sounds: {
+      get: function () {
+        return get('/wordsadmin/sound', {})
+      },
+      add: function (name, file, onProgress, onFinish, onError) {
+        return uploadFile('/wordsadmin/sound/add', {
+          name: name,
+          file: file,
+        }, onProgress, onFinish, onError)
       },
       del: function (wordid) {
         return post('/wordsadmin/word/del', {

@@ -54,6 +54,12 @@ const routes = [
     component: () => import('@/views/wordsadmin/word_add.vue'),
     meta: { title: '单词表-单词添加', requireAuth:true, },
   },
+  { // 音频管理
+    path: '/wordsadmin/sound',
+    name: 'wordsadmin_sound',
+    component: () => import('@/views/wordsadmin/sound.vue'),
+    meta: { title: '音频管理', requireAuth:true, },
+  },
   {
     path: '/dictation/select',
     name: 'dictation_select',

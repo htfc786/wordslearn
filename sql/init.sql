@@ -44,7 +44,9 @@ CREATE TABLE `books` (
 
 CREATE TABLE `sounds` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `name` varchar(32) NOT NULL COMMENT '音频名',
   `url` varchar(2048) NOT NULL COMMENT '音频url',
+  `filekey` varchar(2048) NOT NULL COMMENT '音频文件key 预留',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4;
 
