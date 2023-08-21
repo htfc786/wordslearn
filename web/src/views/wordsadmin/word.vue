@@ -57,6 +57,16 @@
         <el-table-column prop="pronounce" label="音标" />
         <el-table-column prop="chinese" label="中文" />
         <el-table-column prop="note" label="备注" />
+        <el-table-column fixed="right" label="音频">
+          <template #default="scope">
+            <el-button
+              v-if="scope.row.sound_id"
+              @click="playWordSound(scope.row.id)"
+              size="small"
+              >音频</el-button
+            >
+          </template>
+        </el-table-column>
         <el-table-column fixed="right" label="操作">
           <template #default="scope">
             <el-button
@@ -124,11 +134,14 @@
       </span>
     </template>
   </el-dialog>
+
+  <noUiplayer ref="player" />
 </template>
 
 <script>
 import API from '@/network/API'
 import WordsadminHeader from '@/components/wordsadmin_header.vue'
+import noUiplayer from '@/components/noUiplayer.vue'
 
 export default {
   name: 'wordsadmin_word',
@@ -177,7 +190,7 @@ export default {
       checkIdList: [],
     }
   },
-  components: { WordsadminHeader },
+  components: { WordsadminHeader, noUiplayer },
   mounted: function () {
     this.groupid = this.$route.params.groupid
 
@@ -331,6 +344,28 @@ export default {
           that.getWord()
           that.checkIdList = []
         })
+    },
+    async playWordSound(wordid){
+      const wordData = this.wordsData.find((currentValue)=>{
+        return currentValue.id == wordid;
+      })
+      if (!(wordData && wordData.sound_id && wordData.sound_start && wordData.sound_end)){
+        this.$message.error("无法播放音频!");
+        return;
+      }
+
+      const soundData = await API.wordsadmin.sounds.info(wordData.sound_id);
+
+      if (soundData.code==400) {
+        this.$message.error("音频不存在,请检查音频id是否正确!");
+        return;
+      }
+
+      this.$refs.player.play(
+        soundData.data.url,
+        wordData.sound_start,
+        wordData.sound_end,
+      );
     },
   },
 }

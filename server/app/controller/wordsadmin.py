@@ -248,6 +248,13 @@ def wordsadmin_word_add():
     
     word_bookid = exists.bookid
 
+    if word_sound_id=='':
+       word_sound_id = None
+    if word_sound_start=='':
+       word_sound_start = None
+    if word_sound_end=='':
+       word_sound_end = None
+
     word = Words(
         word=word_word,
         pronounce=word_pronounce,
@@ -285,10 +292,21 @@ def wordsadmin_word_edit():
     word_pronounce = request.form["pronounce"]
     word_chinese = request.form["chinese"]
     word_note = request.form["note"]
-    word_type = request.form["type"]
+    word_type_res = request.form["type"]
     word_sound_id = request.form["sound_id"]
     word_sound_start = request.form["sound_start"]
     word_sound_end = request.form["sound_end"]
+
+    word_type = 0
+    if word_type_res=='true':
+       word_type = 1 
+    
+    if word_sound_id=='':
+       word_sound_id = None
+    if word_sound_start=='':
+       word_sound_start = None
+    if word_sound_end=='':
+       word_sound_end = None
     
     word = Words.query.filter_by(id=word_wordid).first()
     word.word=word_word
@@ -317,6 +335,24 @@ def wordsadmin_sound():
         })
       
     return jsonify({ "code": 200, "msg": "查询成功！", "data": soundsdata })
+
+@app.route('/wordsadmin/sound/info', methods=['GET'])
+@jwt_required()
+def wordsadmin_sound_info():
+    soundid = request.args["soundid"]
+
+    sound = Sounds.query.filter_by(id=soundid).first()
+
+    if not sound:
+        return jsonify({ "code": 400, "msg": "查询失败！" })
+
+    sounddata = {
+        "id": sound.id,
+        "name": sound.name,
+        "url": sound.url,
+    }
+      
+    return jsonify({ "code": 200, "msg": "查询成功！", "data": sounddata })
 
 @app.route('/wordsadmin/sound/add', methods=['POST'])
 @jwt_required()

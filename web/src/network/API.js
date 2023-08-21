@@ -136,15 +136,20 @@ export default {
           chinese: chinese,
           note: note,
           type: type,
-          sound_id: sound_id,
-          sound_start: sound_start,
-          sound_end: sound_end,
+          sound_id: sound_id  || "",
+          sound_start: sound_start  || "",
+          sound_end: sound_end  || "",
         })
       },
     },
     sounds: {
       get: function () {
         return get('/wordsadmin/sound', {})
+      },
+      info: function (soundid) {
+        return get('/wordsadmin/sound/info', {
+          soundid: soundid,
+        })
       },
       add: function (name, file, onProgress, onFinish, onError) {
         return uploadFile(
