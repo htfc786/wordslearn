@@ -98,21 +98,21 @@ export default {
   methods: {
     getBookname() {
       const that = this
-      API.wordsadmin.books.info(this.bookid)
-        .then((e) => {
-          that.bookname = e.data.name
-        })
+      API.wordsadmin.books.info(this.bookid).then((e) => {
+        that.bookname = e.data.name
+      })
     },
     getGroup() {
       const that = this
-      API.wordsadmin.groups.get(this.bookid)
+      API.wordsadmin.groups
+        .get(this.bookid)
         .then((e) => {
           that.groupsData = e.data
         })
         .catch((e) => {
-          if (e.msg == "查询没有当前书！") {
-            that.groupsData = [];
-            that.hasGroupsData = false;  
+          if (e.msg == '查询没有当前书！') {
+            that.groupsData = []
+            that.hasGroupsData = false
           }
         })
     },

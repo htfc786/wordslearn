@@ -1,9 +1,5 @@
 <template>
-  <audio
-    :src="src"
-    ref="musicPlay"
-    autoplay="autoplay"
-  ></audio>
+  <audio :src="src" ref="musicPlay" autoplay="autoplay"></audio>
 </template>
 
 <script>
@@ -11,7 +7,7 @@ export default {
   data() {
     //数据
     return {
-      src: "", //目标地址
+      src: '', //目标地址
       sound_start: 0,
       sound_end: 0,
       canPlay: false,
@@ -19,15 +15,15 @@ export default {
   },
   watch: {
     src(newItem, oldItem) {
-      this.canPlay = false;
+      this.canPlay = false
     },
     canPlay(newItem, oldItem) {
-      if (newItem){
+      if (newItem) {
         const musicPlay = this.$refs.musicPlay
         musicPlay.currentTime = this.sound_start
         musicPlay.play()
       }
-    }
+    },
   },
   mounted: function () {
     this._initPlayer()
@@ -37,14 +33,14 @@ export default {
       const musicPlay = this.$refs.musicPlay
       const that = this
       musicPlay.ontimeupdate = () => {
-        if (musicPlay.duration){
-          if (musicPlay.currentTime >= that.sound_end){
+        if (musicPlay.duration) {
+          if (musicPlay.currentTime >= that.sound_end) {
             musicPlay.pause()
           }
         }
       }
       musicPlay.oncanplay = () => {
-        that.canPlay = true;
+        that.canPlay = true
       }
     },
     play(url, sound_start, sound_end) {
@@ -52,9 +48,9 @@ export default {
 
       this.sound_start = sound_start
       this.sound_end = sound_end
-      
+
       this.src = url
-      if (this.canPlay){
+      if (this.canPlay) {
         musicPlay.currentTime = sound_start
         musicPlay.play()
       }
@@ -63,6 +59,4 @@ export default {
 }
 </script>
 
-<style>
-
-</style>
+<style></style>

@@ -11,7 +11,7 @@
       <el-table v-else-if="soundsData" :data="soundsData" border>
         <el-table-column prop="soundid" label="id" />
         <el-table-column prop="name" label="音频名" />
-        <el-table-column fixed="right" label="播放音频" width="100px">
+        <el-table-column fixed="right" label="播放音频">
           <template #default="scope">
             <el-button
               type="primary"
@@ -21,7 +21,7 @@
             />
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="155px">
+        <el-table-column fixed="right" label="操作">
           <template #default="scope">
             <el-button @click="copySoundId(scope.row.soundid)" size="small"
               >复制id</el-button
@@ -92,7 +92,7 @@ export default {
       playName: '',
     }
   },
-  components: { 
+  components: {
     WordsadminHeader,
     UploadPercent,
     musicPlayer,
@@ -117,6 +117,8 @@ export default {
       }
 
       this.addSound.show = false
+
+      this.percent.percent = 0
       this.percent.show = true
 
       const that = this
@@ -130,15 +132,14 @@ export default {
         function (e) {
           //成功请求
           that.percent.show = false
-          console.log(e)
           that.$message.success(e.msg)
           that.getSound()
         },
         function (e) {
           //失败请求
           that.percent.show = false
-          console.log(e)
           that.$message.error(e.msg)
+          that.getSound()
         }
       )
     },

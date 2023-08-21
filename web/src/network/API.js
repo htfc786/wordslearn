@@ -136,9 +136,9 @@ export default {
           chinese: chinese,
           note: note,
           type: type,
-          sound_id: sound_id  || "",
-          sound_start: sound_start  || "",
-          sound_end: sound_end  || "",
+          sound_id: sound_id || '',
+          sound_start: sound_start || '',
+          sound_end: sound_end || '',
         })
       },
     },

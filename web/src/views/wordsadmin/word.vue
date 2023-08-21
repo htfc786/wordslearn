@@ -22,7 +22,9 @@
         >
           添加单词
         </el-button>
-        <el-button type="danger" @click="delCheckWord()">删除所选单词</el-button>
+        <el-button type="danger" @click="delCheckWord()"
+          >删除所选单词</el-button
+        >
       </div>
       <el-skeleton v-if="!wordsData" animated />
       <el-result
@@ -44,7 +46,7 @@
         border
         @selection-change="wordDataCheck"
       >
-        <el-table-column type="selection" width="40"/>
+        <el-table-column type="selection" width="40" />
         <el-table-column type="index" />
         <!-- <el-table-column prop="id" label="id" width="48px" /> -->
         <el-table-column prop="word" label="单词" />
@@ -69,9 +71,7 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作">
           <template #default="scope">
-            <el-button
-              @click="editWord_open(scope.row.id)"
-              size="small"
+            <el-button @click="editWord_open(scope.row.id)" size="small"
               >编辑</el-button
             >
             <el-button
@@ -188,6 +188,7 @@ export default {
         ],
       },
       checkIdList: [],
+      _soundCatch: {},
     }
   },
   components: { WordsadminHeader, noUiplayer },
@@ -258,10 +259,10 @@ export default {
 
       this.addWord.wordid = wordid
 
-      const wordsDataRes = this.wordsData.find((currentValue)=>{
-        return currentValue.id == wordid;
+      const wordsDataRes = this.wordsData.find((currentValue) => {
+        return currentValue.id == wordid
       })
-      
+
       this.addWord.word = wordsDataRes.word
       this.addWord.pronounce = wordsDataRes.pronounce
       this.addWord.chinese = wordsDataRes.chinese
@@ -279,7 +280,7 @@ export default {
         if (valid) {
           API.wordsadmin.words
             .edit(
-              that.addWord.wordid, 
+              that.addWord.wordid,
               that.addWord.word,
               that.addWord.pronounce,
               that.addWord.chinese,
@@ -287,7 +288,7 @@ export default {
               that.addWord.type,
               that.addWord.sound_id,
               that.addWord.sound_start,
-              that.addWord.sound_end,
+              that.addWord.sound_end
             )
             .then((e) => {
               that.$message.success(e.msg)
@@ -307,29 +308,38 @@ export default {
       })
     },
     wordDataCheck(val) {
-      var checklist = [];
+      var checklist = []
       for (var i = 0; i < val.length; i++) {
-        checklist.push(val[i].id);
+        checklist.push(val[i].id)
       }
-      this.checkIdList = checklist;
+      this.checkIdList = checklist
     },
-    delCheckWord(){
-      if (!this.checkIdList.length){
-        this.$message.error('请选择单词！');
-        return;
+    delCheckWord() {
+      if (!this.checkIdList.length) {
+        this.$message.error('请选择单词！')
+        return
       }
       const that = this
-      this.$messageBox.confirm('确定要删除所选的 '+this.checkIdList.length+' 个单词吗？', '批量删除', { confirmButtonText: '删除', cancelButtonText: '取消', type: 'warning' })
+      this.$messageBox
+        .confirm(
+          '确定要删除所选的 ' + this.checkIdList.length + ' 个单词吗？',
+          '批量删除',
+          {
+            confirmButtonText: '删除',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }
+        )
         .then(async () => {
-          for(var i=0;i<that.checkIdList.length;i++){
+          for (var i = 0; i < that.checkIdList.length; i++) {
             var wordid = that.checkIdList[i]
 
-            const wordsDataRes = this.wordsData.find((currentValue)=>{
-              return currentValue.id == wordid;
+            const wordsDataRes = this.wordsData.find((currentValue) => {
+              return currentValue.id == wordid
             })
-            var msgHead = '';
+            var msgHead = ''
             if (wordsDataRes) {
-              msgHead = wordsDataRes.word + ': ';
+              msgHead = wordsDataRes.word + ': '
             }
 
             const res = await API.wordsadmin.words.del(wordid)
@@ -340,32 +350,53 @@ export default {
             }
           }
 
-          that.$message.success('批量删除完成！');
+          that.$message.success('批量删除完成！')
           that.getWord()
           that.checkIdList = []
         })
     },
-    async playWordSound(wordid){
-      const wordData = this.wordsData.find((currentValue)=>{
-        return currentValue.id == wordid;
+    async playWordSound(wordid) {
+      const wordData = this.wordsData.find((currentValue) => {
+        return currentValue.id == wordid
       })
-      if (!(wordData && wordData.sound_id && wordData.sound_start && wordData.sound_end)){
-        this.$message.error("无法播放音频!");
-        return;
+      if (
+        !(
+          wordData &&
+          wordData.sound_id &&
+          wordData.sound_start &&
+          wordData.sound_end
+        )
+      ) {
+        this.$message.error('无法播放音频!')
+        return
       }
 
-      const soundData = await API.wordsadmin.sounds.info(wordData.sound_id);
+      var soundurl
+      if (this._soundCatch[wordData.sound_id]) {
+        if (this._soundCatch[wordData.sound_id] == 'null') {
+          this.$message.error('音频不存在,请检查音频id是否正确!')
+          return
+        }
+        soundurl = this._soundCatch[wordData.sound_id]
+      } else {
+        const soundData = await API.wordsadmin.sounds
+          .info(wordData.sound_id)
+          .catch((e) => {
+            if (e.code == 400) {
+              this.$message.error('音频不存在,请检查音频id是否正确!')
+              return
+            }
+          })
+        if (!soundData) {
+          this._soundCatch[wordData.sound_id] = 'null'
+          return
+        }
+        this._soundCatch[wordData.sound_id] = soundData.data.url
 
-      if (soundData.code==400) {
-        this.$message.error("音频不存在,请检查音频id是否正确!");
-        return;
+        soundurl = soundData.data.url
       }
 
-      this.$refs.player.play(
-        soundData.data.url,
-        wordData.sound_start,
-        wordData.sound_end,
-      );
+      this.$refs.player.play(soundurl, wordData.sound_start, wordData.sound_end)
     },
   },
 }

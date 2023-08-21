@@ -10,7 +10,6 @@ export default function elTableScrollToRow(table, rowData) {
   if (!bodyWrapper || !tr) {
     return
   }
-  console.log(bodyWrapper,tr,tr.offsetTop , tr.clientHeight , bodyWrapper.clientHeight)
   if (bodyWrapper.clientHeight + bodyWrapper.scrollTop < tr.offsetTop + tr.clientHeight || tr.offsetTop < bodyWrapper.scrollTop) {
     bodyWrapper.style.scrollBehavior = 'smooth'
     bodyWrapper.scrollTop = tr.offsetTop + tr.clientHeight - bodyWrapper.clientHeight

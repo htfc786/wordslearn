@@ -20,12 +20,7 @@
       </div>
     </div>
 
-    <audio
-      :src="src"
-      ref="musicPlay"
-      autoplay="autoplay"
-      loop="true"
-    ></audio>
+    <audio :src="src" ref="musicPlay" autoplay="autoplay"></audio>
   </div>
 </template>
 
@@ -48,7 +43,7 @@ export default {
   },
   watch: {
     isPlaying(newItem, oldItem) {
-      if (this.canPlay){
+      if (this.canPlay) {
         const musicPlay = this.$refs.musicPlay
         if (newItem) {
           musicPlay.play()
@@ -58,8 +53,8 @@ export default {
       }
     },
     src(newItem, oldItem) {
-      this.canPlay = false;
-      this.show = true;
+      this.canPlay = false
+      this.show = true
     },
   },
   mounted: function () {
@@ -73,23 +68,23 @@ export default {
         that.isPlaying = !musicPlay.paused
       }
       musicPlay.ontimeupdate = () => {
-        if (musicPlay.duration){
+        if (musicPlay.duration) {
           that.progress = Math.floor(
             (musicPlay.currentTime / musicPlay.duration) * 100
           )
           that.duration = that.handleTime(musicPlay.duration)
           that.currenttime = that.handleTime(musicPlay.currentTime)
         } else {
-          that.duration = "00:00"
-          that.currenttime = "00:00"
+          that.duration = '00:00'
+          that.currenttime = '00:00'
         }
       }
       musicPlay.oncanplay = () => {
-        that.canPlay = true;
+        that.canPlay = true
       }
     },
     _playingChange(e) {
-      if (this.canPlay){
+      if (this.canPlay) {
         const progress = e / 100
         //进度条反向控制
         const musicPlay = this.$refs.musicPlay

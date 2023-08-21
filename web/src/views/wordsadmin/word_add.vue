@@ -131,8 +131,7 @@
         <el-table-column prop="sound_end" label="音频结束" />
       </el-table>
       <template #footer>
-        <span class="dialog-footer">
-        </span>
+        <span class="dialog-footer"> </span>
       </template>
     </el-dialog>
   </el-container>
@@ -224,33 +223,33 @@ export default {
                 that.wordForm.type,
                 that.wordForm.sound_id,
                 that.wordForm.sound_start,
-                that.wordForm.sound_end,
+                that.wordForm.sound_end
               )
               .then((e) => {
                 // ElMessage.success(e.msg)
-                resolve({word: that.wordForm.word, message: e.msg })
+                resolve({ word: that.wordForm.word, message: e.msg })
                 that.$refs.wordForm.resetFields()
               })
           } else {
             Object.values(fields).forEach((item, index) => {
               item.forEach((item, index) => {
                 // ElMessage.error(msgHead + item.message)
-                reject({word: that.wordForm.word, message: item.message })
+                reject({ word: that.wordForm.word, message: item.message })
               })
             })
           }
         })
-      });
+      })
     },
     oneAddWord() {
       this.addWord()
-        .then(({word, message})=>{
+        .then(({ word, message }) => {
           var msgHead = word + (word ? ': ' : '')
           ElMessage.success(msgHead + message)
         })
-        .catch(({word, message})=>{
+        .catch(({ word, message }) => {
           var msgHead = word + (word ? ': ' : '')
-          ElMessage.error(msgHead + message);
+          ElMessage.error(msgHead + message)
         })
     },
     async batchAddWord() {
@@ -349,15 +348,15 @@ export default {
       for (var i = 0; i < this.batchWordTableData.length; i++) {
         var item = this.batchWordTableData[i]
 
-        item.loading = true;
+        item.loading = true
         // 滚动到这一行
         if (this.$refs.batchWordTable) {
           elTableScrollToRow(this.$refs.batchWordTable, item)
         }
 
         if (item.errormsg) {
-          item.loading = false;
-          continue;
+          item.loading = false
+          continue
         }
         // 赋值
         this.wordForm.word = item.word
@@ -371,21 +370,21 @@ export default {
 
         //添加
         await this.addWord()
-          .then(({word, message})=>{
-            item.status = "success";
-            item.loading = false;
+          .then(({ word, message }) => {
+            item.status = 'success'
+            item.loading = false
           })
-          .catch(({word, message})=>{
+          .catch(({ word, message }) => {
             var msgHead = word + (word ? ': ' : '')
 
             ElMessage.error(msgHead + message)
-            item.errormsg = message;
-            item.status = "error";
-            item.loading = false;
+            item.errormsg = message
+            item.status = 'error'
+            item.loading = false
           })
       }
-      ElMessage.success("数据添加成功！具体请见详情信息")
-      this.batchWordFrom.batchText = '';
+      ElMessage.success('数据添加成功！具体请见详情信息')
+      this.batchWordFrom.batchText = ''
     },
   },
 }
