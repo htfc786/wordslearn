@@ -248,7 +248,7 @@ export default {
       const wordsDataRes = this.wordsData.find((currentValue)=>{
         return currentValue.id == wordid;
       })
-      console.log(wordsDataRes)
+      
       this.addWord.word = wordsDataRes.word
       this.addWord.pronounce = wordsDataRes.pronounce
       this.addWord.chinese = wordsDataRes.chinese

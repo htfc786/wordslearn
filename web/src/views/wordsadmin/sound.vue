@@ -3,17 +3,27 @@
     <WordsadminHeader title="音频管理" :router_to="{ name: 'index' }" />
     <el-main>
       <div class="tools-bar">
-        <el-button type="primary" @click="addSound.show = true">添加音频</el-button>
+        <el-button type="primary" @click="addSound.show = true"
+          >添加音频</el-button
+        >
       </div>
       <el-skeleton v-if="!soundsData" animated />
       <el-table v-else-if="soundsData" :data="soundsData" border>
         <el-table-column prop="soundid" label="id" />
         <el-table-column prop="name" label="音频名" />
-        <el-table-column fixed="right" label="操作">
+        <el-table-column fixed="right" label="播放音频" width="100px">
           <template #default="scope">
             <el-button
-              @click="copySoundId(scope.row.soundid)"
-              size="small"
+              type="primary"
+              @click="playSound(scope.row.soundid)"
+              :icon="Headset"
+              circle
+            />
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" width="155px">
+          <template #default="scope">
+            <el-button @click="copySoundId(scope.row.soundid)" size="small"
               >复制id</el-button
             >
             <el-button
@@ -34,7 +44,12 @@
         <el-input v-model="addSound.name" placeholder="请输入音频名"></el-input>
       </el-form-item>
       <el-form-item label="音频文件">
-        <input ref="soundUpload" id="uploadFiles" type="file" accept=".mp3,.wav,.ogg,.bmp,.acc,.webm" />
+        <input
+          ref="soundUpload"
+          id="uploadFiles"
+          type="file"
+          accept=".mp3,.wav,.ogg,.bmp,.acc,.webm"
+        />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -44,19 +59,26 @@
       </span>
     </template>
   </el-dialog>
+
   <UploadPercent :show="percent.show" :percent="percent.percent" />
+
+  <musicPlayer :src="playUrl" :name="playName" />
 </template>
 
 <script>
+import { markRaw } from 'vue'
+import { Headset } from '@element-plus/icons-vue'
 import API from '@/network/API'
 import WordsadminHeader from '@/components/wordsadmin_header.vue'
 import UploadPercent from '@/components/uploadPercent.vue'
+import musicPlayer from '@/components/musicPlayer.vue'
 
 export default {
   name: 'wordsadmin_sound',
   data() {
     //数据
     return {
+      Headset: markRaw(Headset),
       soundsData: null, // list
       addSound: {
         show: false,
@@ -66,9 +88,15 @@ export default {
         show: false,
         percent: 0,
       },
+      playUrl: '',
+      playName: '',
     }
   },
-  components: { WordsadminHeader, UploadPercent },
+  components: { 
+    WordsadminHeader,
+    UploadPercent,
+    musicPlayer,
+  },
   mounted: function () {
     this.getSound()
   },
@@ -81,36 +109,38 @@ export default {
     },
     addSound_close() {
       const name = this.addSound.name
-      const uploadFiles = this.$refs.soundUpload;
+      const uploadFiles = this.$refs.soundUpload
 
       if (!uploadFiles.files[0]) {
-        this.$message.error("请选择文件！")
-        return;
+        this.$message.error('请选择文件！')
+        return
       }
 
       this.addSound.show = false
-      this.percent.show = true;
+      this.percent.show = true
 
-      const that = this;
-      API.wordsadmin.sounds
-        .add(
-          name, 
-          uploadFiles.files[0],
-          function(percent){ //进度条更新
-            that.percent.percent = percent
-          },
-          function(e){ //成功请求
-            that.percent.show = false;
-            console.log(e)
-            that.$message.success(e.msg)
-            that.getSound();
-          },
-          function(e){ //失败请求
-            that.percent.show = false;
-            console.log(e)
-            that.$message.error(e.msg)
-          },
-        )
+      const that = this
+      API.wordsadmin.sounds.add(
+        name,
+        uploadFiles.files[0],
+        function (percent) {
+          //进度条更新
+          that.percent.percent = percent
+        },
+        function (e) {
+          //成功请求
+          that.percent.show = false
+          console.log(e)
+          that.$message.success(e.msg)
+          that.getSound()
+        },
+        function (e) {
+          //失败请求
+          that.percent.show = false
+          console.log(e)
+          that.$message.error(e.msg)
+        }
+      )
     },
     delSound(soundid, soundname) {
       const that = this
@@ -133,29 +163,38 @@ export default {
             })
         })
     },
-    copySoundId(soundid){
-      var content = ""+soundid;
+    copySoundId(soundid) {
+      var content = '' + soundid
       if (navigator.clipboard && window.isSecureContext) {
         // navigator clipboard 需要https等安全上下文
         // navigator clipboard 向剪贴板写文本
-        const that = this;
-        navigator.clipboard.writeText(content)
-          .then(function() {
-              that.$message.success("复制成功");
+        const that = this
+        navigator.clipboard.writeText(content).then(
+          function () {
+            that.$message.success('复制成功')
           },
-          function() {
-              that.$message.error("复制失败");
-          });
+          function () {
+            that.$message.error('复制失败')
+          }
+        )
       } else {
-        let copy = (e)=>{
+        let copy = (e) => {
           e.preventDefault()
           e.clipboardData.setData('text/plain', content)
-          document.removeEventListener('copy',copy)
+          document.removeEventListener('copy', copy)
         }
-        document.addEventListener('copy',copy)
-        document.execCommand("Copy");
-        this.$message.success("复制成功");
+        document.addEventListener('copy', copy)
+        document.execCommand('Copy')
+        this.$message.success('复制成功')
       }
+    },
+    playSound(soundid) {
+      const soundData = this.soundsData.find((currentValue) => {
+        return currentValue.soundid == soundid
+      })
+
+      this.playUrl = soundData.url
+      this.playName = soundData.name
     },
   },
 }
