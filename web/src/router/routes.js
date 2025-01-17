@@ -66,5 +66,11 @@ const routes = [
     component: () => import('@/views/dictation_select.vue'),
     meta: { title: '单词默写选择', mode: 'phone', requireAuth:true, },
   },
+  {
+    path: '/dictation',
+    name: 'dictation',
+    component: () => import('@/views/dictation.vue'),
+    meta: { title: '单词默写', mode: 'phone', requireAuth:true, },
+  },
 ]
 export default routes
